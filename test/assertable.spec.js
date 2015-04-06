@@ -141,7 +141,7 @@ describe('Assertable', function() {
     }).to.throw('State "test" does not exist');
   });
 
-  it('should throw an error when trying to register a state that does not exist', function() {
+  it('should throw an error when trying to register a property that does not exist', function() {
     var assertable = new Assertable();
 
     bundles.push({properties: {}});
