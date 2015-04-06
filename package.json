@@ -10,7 +10,7 @@
   "contributors": [],
   "license": "MIT",
   "dependencies": {
-    "chai": "^1.10.0",
+    "chai": "^2.0.0",
     "commander": "^2.7.1",
     "jquery": "^2.1.1",
     "lodash": "^3.6.0",
