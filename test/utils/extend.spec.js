@@ -67,10 +67,4 @@ describe('extend', function() {
 
     expect(ctor).to.have.been.called;
   });
-
-  it('should assign a reference to the parent on the child', function() {
-    var Child = Parent.extend();
-
-    expect(Child.super_).to.equal(Parent);
-  });
 });
