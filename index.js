@@ -21,6 +21,7 @@ var evaluator = new module.exports.Evaluator();
 
 // TODO: remove this from public interface
 module.exports.evaluator = evaluator;
+module.exports.inherits = require('./lib/utils/inherits');
 module.exports.key = webdriver.Key;
 module.exports.open = evaluator.open.bind(evaluator);
 module.exports.close = evaluator.close.bind(evaluator);
