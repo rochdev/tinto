@@ -7,6 +7,45 @@
 
 A functional testing framework for component-based web applications
 
+## Usage
+
+### Component definition
+
+**ES5**
+```js
+function Grid(locator) {
+  Component.call(this, locator);
+  
+  this.getter('rows', function() {
+    return this.find('tr');
+  });
+}
+
+tinto.inherits(Grid, Component);
+```
+
+**ES6**
+```js
+class Grid extends Component {
+  constructor: function(locator) {
+    super(locator);
+  }
+  
+  get rows() {
+    return this.find('tr');
+  }
+}
+```
+
+**.extend**
+```js
+var Grid = Component.extend({
+  get rows() {
+    return this.find('tr');
+  }
+});
+```
+
 ## Examples
 
 See the [example](example) folder for a complete example.
