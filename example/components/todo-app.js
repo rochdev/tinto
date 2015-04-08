@@ -1,6 +1,6 @@
 'use strict';
 
-var tinto = require('../../lib/tinto');
+var tinto = require('../../index');
 
 var TodoApp = tinto.Component.extend({
   get newTodo() {
