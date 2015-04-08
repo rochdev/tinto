@@ -12,6 +12,7 @@ var expect = require('chai').use(sinonChai).expect;
 describe('Component', function() {
   var queue;
   var extend;
+  var getters;
   var element;
   var promise;
   var component;
@@ -22,9 +23,11 @@ describe('Component', function() {
     });
 
     extend = sinon.spy(function() {return 'test';});
+    getters = sinon.spy();
 
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
+    Component.__set__('getters', getters);
   });
 
   beforeEach(function() {
@@ -135,5 +138,28 @@ describe('Component', function() {
 
     expect(Test).to.have.been.calledWith(element);
     expect(test).to.be.instanceOf(Component);
+  });
+
+  it('should create a getter', function() {
+    var element = {};
+    var component = new Component(element);
+
+    component.hello = 'world';
+    component.getter('test', function() {
+      return this.hello;
+    });
+
+    expect(component.test).to.be.defined;
+    expect(component.test).to.equal('world');
+  });
+
+  it('should create getters', function() {
+    var element = {};
+    var component = new Component(element);
+    var props = {};
+
+    component.getters(props);
+
+    expect(getters).to.have.been.calledWith(component, props);
   });
 });
