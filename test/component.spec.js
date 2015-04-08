@@ -91,12 +91,13 @@ describe('Component', function() {
   });
 
   it('should enter text on the component', function() {
-    component.enter('test');
+    component.enter('hello', 'world');
 
     expect(queue.push).to.have.been.called;
 
     return queue.push.args[0][0]().then(function() {
-      expect(element.sendKeys).to.have.been.calledWith('test');
+      expect(element.sendKeys).to.have.been.calledWith('hello');
+      expect(element.sendKeys).to.have.been.calledWith('hello', 'world');
     });
   });
 
