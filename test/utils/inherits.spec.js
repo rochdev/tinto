@@ -5,7 +5,7 @@ var sinonChai = require('sinon-chai');
 var expect = require('chai').use(sinonChai).expect;
 var inherits = require('../../lib/utils/inherits');
 
-describe('extend', function() {
+describe('inherits', function() {
   var Parent;
   var Child;
 
