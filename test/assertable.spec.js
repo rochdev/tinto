@@ -27,7 +27,7 @@ describe('Assertable', function() {
       return true;
     });
 
-    assertable.supportState('test', test);
+    assertable.state('test', test);
 
     return assertable.is('test')().then(function(result) {
       expect(result).to.be.true;
@@ -41,7 +41,7 @@ describe('Assertable', function() {
       return value === 'a value';
     });
 
-    assertable.supportProperty('test', test);
+    assertable.property('test', test);
 
     return assertable.has('test', 'a value')().then(function(result) {
       expect(result).to.be.true;
@@ -52,7 +52,7 @@ describe('Assertable', function() {
   it('should store and execute supported states', function() {
     var assertable = new Assertable();
 
-    assertable.supportStates({
+    assertable.states({
       first: function() {
         return true;
       },
@@ -73,7 +73,7 @@ describe('Assertable', function() {
   it('should store and execute supported properties', function() {
     var assertable = new Assertable();
 
-    assertable.supportProperties({
+    assertable.properties({
       first: function(value) {
         return value === 'first value';
       },
@@ -103,7 +103,7 @@ describe('Assertable', function() {
       }
     });
 
-    assertable.supportState('test');
+    assertable.state('test');
 
     return assertable.is('test')().then(function(result) {
       expect(result).to.be.true;
@@ -123,7 +123,7 @@ describe('Assertable', function() {
       }
     });
 
-    assertable.supportProperty('test');
+    assertable.property('test');
 
     return assertable.has('test', 'a value')().then(function(result) {
       expect(result).to.be.true;
@@ -137,7 +137,7 @@ describe('Assertable', function() {
     bundles.push({states: {}});
 
     expect(function() {
-      assertable.supportState('test');
+      assertable.state('test');
     }).to.throw('State "test" does not exist');
   });
 
@@ -147,7 +147,7 @@ describe('Assertable', function() {
     bundles.push({properties: {}});
 
     expect(function() {
-      assertable.supportProperty('test');
+      assertable.property('test');
     }).to.throw('Property "test" does not exist');
   });
 
