@@ -13,7 +13,7 @@ module.exports = tinto(function() {
   });
 
   this.When(/^I enter \"([^\"]*)\"$/, function(value) {
-    todoApp.newTodo.enter(value, tinto.key.ENTER);
+    todoApp.newTodo.enter(value, tinto.keyboard.ENTER);
   });
 
   this.Then(/^I should see \"([^\"]*)\"$/, function(expected) {

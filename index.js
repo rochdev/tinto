@@ -4,7 +4,6 @@
 // TODO: add tests
 
 var chai = require('chai');
-var webdriver = require('selenium-webdriver');
 var queue = require('./lib/queue');
 var PropertyAssertion = require('./lib/assertions/property-assertion');
 var StateAssertion = require('./lib/assertions/state-assertion');
@@ -22,7 +21,7 @@ var evaluator = new module.exports.Evaluator();
 // TODO: remove this from public interface
 module.exports.evaluator = evaluator;
 module.exports.inherits = require('./lib/utils/inherits');
-module.exports.key = webdriver.Key;
+module.exports.keyboard = require('./lib/utils/keyboard');
 module.exports.open = evaluator.open.bind(evaluator);
 module.exports.close = evaluator.close.bind(evaluator);
 module.exports.done = queue.process.bind(queue);
