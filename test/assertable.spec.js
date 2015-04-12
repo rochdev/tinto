@@ -113,7 +113,7 @@ describe('Assertable', function() {
 
   it('should support properties from a bundle', function() {
     var assertable = new Assertable();
-    var test = sinon.spy(function(value) {
+    var test = sinon.spy(function() {
       return 'a value';
     });
 
