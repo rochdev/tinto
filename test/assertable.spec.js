@@ -37,8 +37,8 @@ describe('Assertable', function() {
 
   it('should store and execute a supported property', function() {
     var assertable = new Assertable();
-    var test = sinon.spy(function(value) {
-      return value === 'a value';
+    var test = sinon.spy(function() {
+      return 'a value';
     });
 
     assertable.property('test', test);
@@ -74,11 +74,11 @@ describe('Assertable', function() {
     var assertable = new Assertable();
 
     assertable.properties({
-      first: function(value) {
-        return value === 'first value';
+      first: function() {
+        return 'first value';
       },
-      second: function(value) {
-        return value === 'second value';
+      second: function() {
+        return 'second value';
       }
     });
 
@@ -114,7 +114,7 @@ describe('Assertable', function() {
   it('should support properties from a bundle', function() {
     var assertable = new Assertable();
     var test = sinon.spy(function(value) {
-      return value === 'a value';
+      return 'a value';
     });
 
     bundles.push({

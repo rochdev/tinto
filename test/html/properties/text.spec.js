@@ -11,18 +11,12 @@ describe('HTML: text property', function() {
 
   beforeEach(function() {
     context = sinon.stub({text: function() {}});
-    context.text.returns(Q.resolve('valid'));
+    context.text.returns(Q.resolve('test'));
   });
 
   it('should evaluate to true when it matches the inner text', function() {
-    return text.call(context, 'valid').then(function(result) {
-      expect(result).to.be.true;
-    });
-  });
-
-  it('should evaluate to false when it does not match the inner text', function() {
-    return text.call(context, 'invalid').then(function(result) {
-      expect(result).to.be.false;
+    return text.call(context).then(function(result) {
+      expect(result).to.equal('test');
     });
   });
 });

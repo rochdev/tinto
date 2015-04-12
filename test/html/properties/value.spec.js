@@ -11,18 +11,12 @@ describe('HTML: value property', function() {
 
   beforeEach(function() {
     context = sinon.stub({attr: function() {}});
-    context.attr.returns(Q.resolve('valid'));
+    context.attr.returns(Q.resolve('test'));
   });
 
-  it('should evaluate to true when it matches the value attribute', function() {
-    return value.call(context, 'valid').then(function(result) {
-      expect(result).to.be.true;
-    });
-  });
-
-  it('should evaluate to false when it does not match the value attribute', function() {
-    return value.call(context, 'invalid').then(function(result) {
-      expect(result).to.be.false;
+  it('should return the value attribute', function() {
+    return value.call(context).then(function(result) {
+      expect(result).to.equal('test');
     });
   });
 });
