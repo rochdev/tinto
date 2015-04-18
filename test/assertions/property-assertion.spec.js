@@ -22,7 +22,7 @@ describe('PropertyAssertion', function() {
     chai = {
       Assertion: {
         addMethod: sinon.spy(function(name, callback) {
-          callback.call(context, 'value');
+          return callback.call(context, 'value');
         })
       },
       use: function(plugin) {
@@ -114,6 +114,18 @@ describe('PropertyAssertion', function() {
     PropertyAssertion.register('test');
 
     expect(chai.Assertion.addMethod).to.have.been.calledOnce;
+  });
+
+  it('should delegate the actual assertion when using the `delegate` flag', function() {
+    utils.flag.withArgs(context, 'delegate').returns(true);
+
+    PropertyAssertion.register('test');
+
+    expect(queue.push).not.to.have.been.called;
+
+    chai.Assertion.addMethod.returnValues[0](component);
+
+    return assert(true, false, false);
   });
 
   function assert(result, negate, eventually) {

@@ -8,6 +8,7 @@ var Assertable = rewire('../lib/assertable');
 var expect = require('chai').use(sinonChai).expect;
 
 describe('Assertable', function() {
+  var assertable;
   var bundles;
   var chai;
 
@@ -17,12 +18,23 @@ describe('Assertable', function() {
       expect: function() {}
     });
 
+    chai.Assertion = sinon.spy(function() {
+      this.__flags = 'flags';
+    });
+
+    chai.Assertion.prototype.hello = 'world';
+
+    Object.defineProperty(chai.Assertion.prototype, 'foo', {
+      value: 'bar'
+    });
+
     Assertable.__set__('bundles', bundles);
     Assertable.__set__('chai', chai);
+
+    assertable = new Assertable();
   });
 
   it('should store and execute a supported state', function() {
-    var assertable = new Assertable();
     var test = sinon.spy(function() {
       return true;
     });
@@ -36,7 +48,6 @@ describe('Assertable', function() {
   });
 
   it('should store and execute a supported property', function() {
-    var assertable = new Assertable();
     var test = sinon.spy(function() {
       return 'a value';
     });
@@ -50,8 +61,6 @@ describe('Assertable', function() {
   });
 
   it('should store and execute supported states', function() {
-    var assertable = new Assertable();
-
     assertable.states({
       first: function() {
         return true;
@@ -71,8 +80,6 @@ describe('Assertable', function() {
   });
 
   it('should store and execute supported properties', function() {
-    var assertable = new Assertable();
-
     assertable.properties({
       first: function() {
         return 'first value';
@@ -92,7 +99,6 @@ describe('Assertable', function() {
   });
 
   it('should support states from a bundle', function() {
-    var assertable = new Assertable();
     var test = sinon.spy(function() {
       return true;
     });
@@ -112,7 +118,6 @@ describe('Assertable', function() {
   });
 
   it('should support properties from a bundle', function() {
-    var assertable = new Assertable();
     var test = sinon.spy(function() {
       return 'a value';
     });
@@ -132,8 +137,6 @@ describe('Assertable', function() {
   });
 
   it('should throw an error when trying to register a state that does not exist', function() {
-    var assertable = new Assertable();
-
     bundles.push({states: {}});
 
     expect(function() {
@@ -142,8 +145,6 @@ describe('Assertable', function() {
   });
 
   it('should throw an error when trying to register a property that does not exist', function() {
-    var assertable = new Assertable();
-
     bundles.push({properties: {}});
 
     expect(function() {
@@ -152,26 +153,40 @@ describe('Assertable', function() {
   });
 
   it('should throw an error when trying to use a state that does not exist', function() {
-    var assertable = new Assertable();
-
     expect(function() {
       assertable.is('test')();
     }).to.throw('Unsupported state "test"');
   });
 
   it('should throw an error when trying to use a property that does not exist', function() {
-    var assertable = new Assertable();
-
     expect(function() {
       assertable.has('test', 'first value')();
     }).to.throw('Unsupported property "test"');
   });
 
-  it('should delegate assertions', function() {
-    var assertable = new Assertable();
+  it('should contain registered assertions', function() {
+    expect(assertable.should).to.have.property('foo', 'bar');
+  });
 
-    assertable.should;
+  it('should contain assertion flags', function() {
+    expect(assertable.should).to.have.property('__flags', 'flags');
+  });
 
-    expect(chai.expect).to.have.been.calledWith(assertable);
+  it('should not overwrite its own values when asserting', function() {
+    Function.prototype.hello = 'test';
+
+    expect(assertable.should).to.have.property('hello', 'test');
+  });
+
+  it('should assert multiple delegated assertions', function() {
+    var firstAssertion = sinon.spy();
+    var secondAssertion = sinon.spy();
+
+    assertable.should(firstAssertion, secondAssertion);
+
+    expect(firstAssertion).to.have.been.calledWithMatch();
+    expect(firstAssertion.firstCall.args[0]).to.be.instanceof(Assertable);
+    expect(secondAssertion).to.have.been.called;
+    expect(secondAssertion.firstCall.args[0]).to.be.instanceof(Assertable);
   });
 });

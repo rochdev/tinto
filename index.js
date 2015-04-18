@@ -25,6 +25,9 @@ module.exports.keyboard = require('./lib/utils/keyboard');
 module.exports.open = evaluator.open.bind(evaluator);
 module.exports.close = evaluator.close.bind(evaluator);
 module.exports.done = queue.process.bind(queue);
+module.exports.be = require('./lib/utils/delegate');
+module.exports.have = require('./lib/utils/delegate');
+// TODO: not with negate=true
 
 // TODO: replace with built in assertions
 chai.use(require('./lib/assertions'));

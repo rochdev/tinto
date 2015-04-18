@@ -9,9 +9,36 @@ A functional testing framework for component-based web applications
 
 ## Usage
 
+### Assertions syntax
+
+#### Components
+
+##### Single assertion
+```js
+searchButton.should.have.text('Search');
+```
+
+##### Multiples assertions
+```js
+searchButton.should.have.text('Search').and.be.enabled;
+```
+
+##### Multiples assertions (alternate syntax)
+```js
+searchButton.should(
+  have.text('Search'),
+  be.enabled
+);
+```
+
+#### Attributes
+```js
+searchButton.text.should.equal('Search');
+```
+
 ### Component definition
 
-**ES5**
+##### ES5
 ```js
 function Grid(locator) {
   Component.call(this, locator);
@@ -24,7 +51,7 @@ function Grid(locator) {
 tinto.inherits(Grid, Component);
 ```
 
-**ES6**
+##### ES6
 ```js
 class Grid extends Component {
   constructor: function(locator) {
@@ -37,7 +64,7 @@ class Grid extends Component {
 }
 ```
 
-**.extend**
+##### .extends
 ```js
 var Grid = Component.extend({
   get rows() {
