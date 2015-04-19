@@ -18,7 +18,7 @@
     "selenium-webdriver": "^2.44.0"
   },
   "devDependencies": {
-    "chai-as-promised": "^4.1.1",
+    "chai-as-promised": "^5.0.0",
     "cucumber": "^0.4.8",
     "istanbul": "^0.3.8",
     "jscs": "^1.11.3",
