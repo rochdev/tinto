@@ -72,7 +72,7 @@ describe('Component', function() {
   it('should get its text', function() {
     element.getText.returns(Q.resolve('test'));
 
-    var result = component.text();
+    var result = component.text;
 
     return Q.all([promise, result]).then(function(results) {
       expect(element.getText).to.have.been.called;

@@ -10,26 +10,11 @@ var expect = require('chai').use(sinonChai).expect;
 describe('Assertable', function() {
   var assertable;
   var bundles;
-  var chai;
 
   beforeEach(function() {
     bundles = [];
-    chai = sinon.stub({
-      expect: function() {}
-    });
-
-    chai.Assertion = sinon.spy(function() {
-      this.__flags = 'flags';
-    });
-
-    chai.Assertion.prototype.hello = 'world';
-
-    Object.defineProperty(chai.Assertion.prototype, 'foo', {
-      value: 'bar'
-    });
 
     Assertable.__set__('bundles', bundles);
-    Assertable.__set__('chai', chai);
 
     assertable = new Assertable();
   });
@@ -42,7 +27,8 @@ describe('Assertable', function() {
     assertable.state('test', test);
 
     return assertable.is('test')().then(function(result) {
-      expect(result).to.be.true;
+      expect(result[0]).to.be.true;
+      expect(result[1]).to.be.false;
       expect(test.thisValues[0]).to.equal(assertable);
     });
   });
@@ -55,7 +41,8 @@ describe('Assertable', function() {
     assertable.property('test', test);
 
     return assertable.has('test', 'a value')().then(function(result) {
-      expect(result).to.be.true;
+      expect(result[0]).to.be.true;
+      expect(result[1]).to.equal('a value');
       expect(test.thisValues[0]).to.equal(assertable);
     });
   });
@@ -74,8 +61,10 @@ describe('Assertable', function() {
     var isSecond = assertable.is('second')();
 
     return Q.all([isFirst, isSecond]).then(function(results) {
-      expect(results[0]).to.be.true;
-      expect(results[1]).to.be.false;
+      expect(results[0][0]).to.be.true;
+      expect(results[0][1]).to.be.false;
+      expect(results[1][0]).to.be.false;
+      expect(results[1][1]).to.be.true;
     });
   });
 
@@ -93,8 +82,10 @@ describe('Assertable', function() {
     var hasSecond = assertable.has('second', 'second value')();
 
     return Q.all([hasFirst, hasSecond]).then(function(results) {
-      expect(results[0]).to.be.true;
-      expect(results[1]).to.be.true;
+      expect(results[0][0]).to.be.true;
+      expect(results[0][1]).to.equal('first value');
+      expect(results[1][0]).to.be.true;
+      expect(results[1][1]).to.equal('second value');
     });
   });
 
@@ -112,7 +103,8 @@ describe('Assertable', function() {
     assertable.state('test');
 
     return assertable.is('test')().then(function(result) {
-      expect(result).to.be.true;
+      expect(result[0]).to.be.true;
+      expect(result[1]).to.be.false;
       expect(test.thisValues[0]).to.equal(assertable);
     });
   });
@@ -131,7 +123,8 @@ describe('Assertable', function() {
     assertable.property('test');
 
     return assertable.has('test', 'a value')().then(function(result) {
-      expect(result).to.be.true;
+      expect(result[0]).to.be.true;
+      expect(result[1]).to.equal('a value');
       expect(test.thisValues[0]).to.equal(assertable);
     });
   });
@@ -162,31 +155,5 @@ describe('Assertable', function() {
     expect(function() {
       assertable.has('test', 'first value')();
     }).to.throw('Unsupported property "test"');
-  });
-
-  it('should contain registered assertions', function() {
-    expect(assertable.should).to.have.property('foo', 'bar');
-  });
-
-  it('should contain assertion flags', function() {
-    expect(assertable.should).to.have.property('__flags', 'flags');
-  });
-
-  it('should not overwrite its own values when asserting', function() {
-    Function.prototype.hello = 'test';
-
-    expect(assertable.should).to.have.property('hello', 'test');
-  });
-
-  it('should assert multiple delegated assertions', function() {
-    var firstAssertion = sinon.spy();
-    var secondAssertion = sinon.spy();
-
-    assertable.should(firstAssertion, secondAssertion);
-
-    expect(firstAssertion).to.have.been.calledWithMatch();
-    expect(firstAssertion.firstCall.args[0]).to.be.instanceof(Assertable);
-    expect(secondAssertion).to.have.been.called;
-    expect(secondAssertion.firstCall.args[0]).to.be.instanceof(Assertable);
   });
 });

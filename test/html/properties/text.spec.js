@@ -11,7 +11,7 @@ describe('HTML: text property', function() {
 
   beforeEach(function() {
     context = sinon.stub({text: function() {}});
-    context.text.returns(Q.resolve('test'));
+    context.text = Q.resolve('test');
   });
 
   it('should evaluate to true when it matches the inner text', function() {
