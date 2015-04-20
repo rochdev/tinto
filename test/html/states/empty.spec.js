@@ -10,11 +10,11 @@ describe('HTML: empty state', function() {
   var context;
 
   beforeEach(function() {
-    context = sinon.stub({attr: function() {}});
+    context = sinon.stub({getAttribute: function() {}});
   });
 
   it('should evaluate to false when the value is not empty', function() {
-    context.attr.returns(Q.resolve('valid'));
+    context.getAttribute.returns(Q.resolve('valid'));
 
     return empty.call(context).then(function(result) {
       expect(result).to.be.false;
@@ -22,7 +22,7 @@ describe('HTML: empty state', function() {
   });
 
   it('should evaluate to true when the value is empty', function() {
-    context.attr.returns(Q.resolve(''));
+    context.getAttribute.returns(Q.resolve(''));
 
     return empty.call(context).then(function(result) {
       expect(result).to.be.true;
