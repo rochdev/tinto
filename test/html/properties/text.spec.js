@@ -10,8 +10,8 @@ describe('HTML: text property', function() {
   var context;
 
   beforeEach(function() {
-    context = sinon.stub({text: function() {}});
-    context.text = Q.resolve('test');
+    context = sinon.stub({getText: function() {}});
+    context.getText.returns(Q.resolve('test'));
   });
 
   it('should evaluate to true when it matches the inner text', function() {

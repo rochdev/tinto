@@ -11,7 +11,6 @@ var tinto = require('./lib/tinto');
 
 module.exports = tinto;
 
-module.exports.Assertable = require('./lib/assertable');
 module.exports.Component = require('./lib/component');
 module.exports.ComponentCollection = require('./lib/component-collection');
 module.exports.Evaluator = require('./lib/evaluator');
