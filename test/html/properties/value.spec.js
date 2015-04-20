@@ -10,8 +10,8 @@ describe('HTML: value property', function() {
   var context;
 
   beforeEach(function() {
-    context = sinon.stub({attr: function() {}});
-    context.attr.returns(Q.resolve('test'));
+    context = sinon.stub({getAttribute: function() {}});
+    context.getAttribute.returns(Q.resolve('test'));
   });
 
   it('should return the value attribute', function() {
