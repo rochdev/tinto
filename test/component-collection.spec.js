@@ -40,6 +40,30 @@ describe('ComponentCollection', function() {
   //
   //});
 
+  it('should have a count', function() {
+    var promise = Q.resolve([1, 2, 3]);
+    var components = new ComponentCollection(promise);
+
+    return components.count().then(function(length) {
+      expect(length).to.equal(3);
+    });
+  });
+
+  it('should be iteratable', function() {
+    var promise = Q.resolve([1, 2]);
+    var components = new ComponentCollection(promise);
+    var callback = sinon.spy();
+
+    return components.each(callback).then(function() {
+      // TODO: find a way to test component argument
+      expect(callback).to.have.been.calledTwice;
+      expect(callback.firstCall.args[0]).to.be.instanceof(Component);
+      expect(callback.firstCall.args[1]).to.equal(0);
+      expect(callback.secondCall.args[0]).to.be.instanceof(Component);
+      expect(callback.secondCall.args[1]).to.equal(1);
+    });
+  });
+
   it('should delegate extend', function() {
     var protoProps = {};
     var staticProps = {};
