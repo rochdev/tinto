@@ -6,6 +6,8 @@ var rewire = require('rewire');
 var expect = require('chai').use(sinonChai).expect;
 var assertions = rewire('../lib/assertions');
 
+// TODO: clean this up (or remove chai entirely?)
+
 describe('Assertions', function() {
   var assert;
   var assertable;
@@ -33,7 +35,8 @@ describe('Assertions', function() {
         }),
         addProperty: sinon.spy(function(name, callback) {
           properties[name] = callback.bind(context);
-        })
+        }),
+        addChainableMethod: sinon.spy()
       }
     };
 
@@ -60,7 +63,6 @@ describe('Assertions', function() {
     assertions(chai, utils);
 
     expect(chai.Assertion.addProperty).to.have.been.calledWith('be');
-    expect(chai.Assertion.addProperty).to.have.been.calledWith('have');
     expect(chai.Assertion.addProperty).to.have.been.calledWith('and');
     expect(chai.Assertion.addProperty).to.have.been.calledWith('all');
     expect(chai.Assertion.addProperty).to.have.been.calledWith('eventually');
@@ -97,11 +99,23 @@ describe('Assertions', function() {
     assertions(chai, utils);
 
     expect(properties.be()).to.equal(context);
-    expect(properties.have()).to.equal(context);
     expect(properties.and()).to.equal(context);
     expect(properties.all()).to.equal(context);
     expect(properties.eventually()).to.equal(context);
     expect(properties.not()).to.equal(context);
+  });
+
+  it('should register have', function() {
+    var have = chai.Assertion.addChainableMethod.withArgs('have');
+
+    assertions(chai, utils);
+
+    var assertCallback = have.firstCall.args[1];
+    var chainCallback = have.firstCall.args[2];
+
+    expect(assertCallback.call(context, 2)).to.equal(context);
+    expect(chainCallback.call(context)).to.equal(context);
+    expect(utils.flag).to.have.been.calledWith(context, 'count', 2);
   });
 
   it('should flag all', function() {
