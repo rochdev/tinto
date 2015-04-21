@@ -13,7 +13,11 @@ describe('ComponentCollection', function() {
   var ComponentCollection;
 
   beforeEach(function() {
-    mockery.enable({useCleanCache: true});
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
 
     extend = sinon.spy(function() {return 'test';});
     Component = sinon.spy();
