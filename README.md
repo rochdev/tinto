@@ -13,17 +13,22 @@ A functional testing framework for component-based web applications
 
 #### Components
 
-##### Single assertion
+##### Property assertion
 ```js
 searchButton.should.have.text('Search');
 ```
 
-##### Multiples assertions
+##### State assertion
+```js
+searchButton.should.be.enabled;
+```
+
+##### Multiple assertions
 ```js
 searchButton.should.have.text('Search').and.be.enabled;
 ```
 
-##### Multiples assertions (alternate syntax)
+##### Multiple assertions (alternate syntax)
 ```js
 searchButton.should(
   have.text('Search'),
