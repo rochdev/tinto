@@ -1,10 +1,11 @@
 'use strict';
 
-var rewire = require('rewire');
+var mockery = require('mockery');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
+var chaiAsPromised = require('chai-as-promised');
 var Q = require('q');
-var expect = require('chai').use(sinonChai).expect;
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 
 describe('ComponentCollection', function() {
   var extend;
@@ -12,56 +13,22 @@ describe('ComponentCollection', function() {
   var ComponentCollection;
 
   beforeEach(function() {
+    mockery.enable({useCleanCache: true});
+
     extend = sinon.spy(function() {return 'test';});
-    Component = require('../lib/component');
-    ComponentCollection = rewire('../lib/component-collection');
-    ComponentCollection.__set__('extend', extend);
+    Component = sinon.spy();
+
+    mockery.registerMock('./utils/extend', extend);
+    mockery.registerMock('./component', Component);
+
+    ComponentCollection = require('../lib/component-collection', {
+      extend: extend,
+      Component: Component
+    });
   });
 
   afterEach(function() {
-    delete require.cache[require.resolve('../lib/component')];
-  });
-
-  it('should filter a component by index', function() {
-    var promise = Q.resolve(['test']);
-    var components = new ComponentCollection(promise);
-    var component = components.at(0);
-
-    expect(component).to.be.instanceof(Component);
-
-    // TODO: find a better way to mock dependencies to test this
-    //return Component.args[0][0].then(function(element) {
-    //  expect(element).to.equal('test');
-    //});
-  });
-
-  // TODO: find a way to test this
-  //it('should throw when a component retrieved by index does not exist', function() {
-  //
-  //});
-
-  it('should have a count', function() {
-    var promise = Q.resolve([1, 2, 3]);
-    var components = new ComponentCollection(promise);
-
-    return components.count().then(function(length) {
-      expect(length).to.equal(3);
-    });
-  });
-
-  it('should be iteratable', function() {
-    var promise = Q.resolve([1, 2]);
-    var components = new ComponentCollection(promise);
-    var callback = sinon.spy();
-
-    return components.each(callback).then(function() {
-      // TODO: find a way to test component argument
-      expect(callback).to.have.been.calledTwice;
-      expect(callback.firstCall.args[0]).to.be.instanceof(Component);
-      expect(callback.firstCall.args[1]).to.equal(0);
-      expect(callback.secondCall.args[0]).to.be.instanceof(Component);
-      expect(callback.secondCall.args[1]).to.equal(1);
-    });
+    mockery.disable();
   });
 
   it('should delegate extend', function() {
@@ -71,5 +38,57 @@ describe('ComponentCollection', function() {
 
     expect(extend).to.have.been.calledWith(protoProps, staticProps);
     expect(test).to.equal('test');
+  });
+
+  describe('given the elements [1, 2]', function() {
+    var promise;
+    var components;
+
+    beforeEach(function() {
+      promise = Q.resolve([1, 2]);
+      components = new ComponentCollection(promise);
+    });
+
+    it('should filter a component by index', function() {
+      var component = components.at(0);
+
+      expect(Component).to.have.been.called;
+      expect(component).to.be.instanceof(Component);
+
+      return Component.args[0][0].then(function(element) {
+        expect(element).to.equal(1);
+      });
+    });
+
+    it('should throw when a component retrieved by index does not exist', function() {
+      components.at(2);
+
+      return expect(Component.firstCall.args[0]).to.eventually.be.rejected;
+    });
+
+    it('should have a count', function() {
+      return components.count().then(function(length) {
+        expect(length).to.equal(2);
+      });
+    });
+
+    it('should be iteratable', function() {
+      var callback = sinon.spy();
+
+      return components.each(callback).then(function() {
+        expect(callback).to.have.been.calledTwice;
+
+        expect(callback.firstCall.args[0]).to.be.instanceof(Component);
+        expect(callback.firstCall.args[1]).to.equal(0);
+
+        expect(callback.secondCall.args[0]).to.be.instanceof(Component);
+        expect(callback.secondCall.args[1]).to.equal(1);
+
+        return Q.all([
+          expect(Component.firstCall.args[0]).to.eventually.equal(1),
+          expect(Component.secondCall.args[0]).to.eventually.equal(2)
+        ]);
+      });
+    });
   });
 });
