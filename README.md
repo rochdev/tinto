@@ -64,7 +64,7 @@ class Grid extends Component {
 }
 ```
 
-##### .extends
+##### .extend
 ```js
 var Grid = Component.extend({
   get rows() {
