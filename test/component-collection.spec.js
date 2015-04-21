@@ -15,7 +15,6 @@ describe('ComponentCollection', function() {
   beforeEach(function() {
     mockery.enable({
       useCleanCache: true,
-      warnOnReplace: false,
       warnOnUnregistered: false
     });
 
@@ -32,6 +31,7 @@ describe('ComponentCollection', function() {
   });
 
   afterEach(function() {
+    mockery.deregisterAll();
     mockery.disable();
   });
 
