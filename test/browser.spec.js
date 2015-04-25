@@ -5,11 +5,11 @@ var sinonChai = require('sinon-chai');
 var expect = require('chai').use(sinonChai).expect;
 var rewire = require('rewire');
 var Q = require('q');
-var Evaluator = rewire('../lib/evaluator');
+var Browser = rewire('../lib/browser');
 
-describe('Evaluator', function() {
+describe('Browser', function() {
   var Component;
-  var evaluator;
+  var browser;
   var webdriver;
   var builder;
   var forBrowser;
@@ -34,48 +34,48 @@ describe('Evaluator', function() {
 
     Component = sinon.spy();
 
-    Evaluator.__set__('webdriver', webdriver);
-    Evaluator.__set__('queue', queue);
-    Evaluator.__set__('Component', Component);
+    Browser.__set__('webdriver', webdriver);
+    Browser.__set__('queue', queue);
+    Browser.__set__('Component', Component);
 
-    evaluator = new Evaluator();
+    browser = new Browser();
   });
 
   it('should open the driver and visit the URL', function() {
-    evaluator.open('test.com');
+    browser.open('test.com');
 
     expect(forBrowser.build).to.have.been.called;
     expect(driver.get).to.have.been.calledWith('test.com');
   });
 
   it('should only open the driver if not already opened', function() {
-    evaluator.open('test.com');
-    evaluator.open('test.com');
+    browser.open('test.com');
+    browser.open('test.com');
 
     expect(forBrowser.build).to.have.been.calledOnce;
   });
 
   it('should add opening the driver to the queue', function() {
-    var promise = evaluator.open('test.com');
+    var promise = browser.open('test.com');
 
     expect(queue.push).to.have.been.calledWith(promise);
   });
 
   it('should close the driver', function() {
-    evaluator.open();
+    browser.open();
     driver.close.returns(Q.resolve());
 
-    return evaluator.close().then(function() {
+    return browser.close().then(function() {
       expect(queue.process).to.have.been.called;
       expect(driver.close).to.have.been.called;
     });
   });
 
   it('should force close the driver', function() {
-    evaluator.open();
+    browser.open();
     driver.close.returns(Q.resolve());
 
-    return evaluator.close(true).then(function() {
+    return browser.close(true).then(function() {
       expect(queue.process).not.to.have.been.called;
       expect(driver.close).to.have.been.called;
     });
@@ -83,17 +83,17 @@ describe('Evaluator', function() {
 
   it('should do nothing when trying to close an unopened driver', function(done) {
     expect(function() {
-      evaluator.close().then(done).done();
+      browser.close().then(done).done();
     }).not.to.throw();
   });
 
   it('should find components', function() {
     var element = {};
 
-    evaluator.open();
+    browser.open();
     driver.findElement.returns(element);
 
-    var component = evaluator.find('test');
+    var component = browser.find('test');
 
     expect(driver.findElement).to.have.been.calledWithMatch({css: 'test'});
     expect(component).to.be.instanceof(Component);
