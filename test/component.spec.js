@@ -10,6 +10,7 @@ var ComponentCollection = require('../lib/component-collection');
 var expect = require('chai').use(sinonChai).expect;
 
 describe('Component', function() {
+  var CountAssertion;
   var bundles;
   var queue;
   var extend;
@@ -19,6 +20,8 @@ describe('Component', function() {
   var component;
 
   beforeEach(function() {
+    CountAssertion = sinon.stub({register: function() {}});
+
     bundles = [];
 
     queue = sinon.stub({
@@ -26,7 +29,9 @@ describe('Component', function() {
     });
 
     extend = sinon.spy(function() {return 'test';});
-    getters = sinon.spy();
+
+    getters = sinon.stub();
+    getters.returns(['foo', 'bar']);
 
     element = sinon.stub({
       findElements: function() {},
@@ -39,6 +44,7 @@ describe('Component', function() {
 
     promise = Q.resolve(element);
 
+    Component.__set__('CountAssertion', CountAssertion);
     Component.__set__('bundles', bundles);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
@@ -130,19 +136,14 @@ describe('Component', function() {
   });
 
   it('should create an instance of itself from another component', function() {
-    var element = {};
-    var component = new Component(element);
     var Test = sinon.spy(Component);
     var test = Test.from(component);
 
-    expect(Test).to.have.been.calledWith(element);
+    expect(Test).to.have.been.calledWith(promise);
     expect(test).to.be.instanceOf(Component);
   });
 
   it('should create a getter', function() {
-    var element = {};
-    var component = new Component(element);
-
     component.hello = 'world';
     component.getter('test', function() {
       return this.hello;
@@ -153,13 +154,24 @@ describe('Component', function() {
   });
 
   it('should create getters', function() {
-    var element = {};
-    var component = new Component(element);
     var props = {};
 
     component.getters(props);
 
     expect(getters).to.have.been.calledWith(component, props);
+  });
+
+  it('should create a count assertion from a getter', function() {
+    component.getter('test', function() {});
+
+    expect(CountAssertion.register).to.have.been.calledWith('test');
+  });
+
+  it('should create count assertions from getters', function() {
+    component.getters();
+
+    expect(CountAssertion.register).to.have.been.calledWith('foo');
+    expect(CountAssertion.register).to.have.been.calledWith('bar');
   });
 
   it('should store and execute a supported state', function() {
