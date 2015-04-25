@@ -64,10 +64,6 @@ tinto.inherits(Grid, Component);
 ##### ES6
 ```js
 class Grid extends Component {
-  constructor: function(locator) {
-    super(locator);
-  }
-  
   get rows() {
     return this.find('tr');
   }
