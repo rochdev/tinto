@@ -2,7 +2,7 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
-var Q = require('Q');
+var Q = require('q');
 var rewire = require('rewire');
 var expect = require('chai').use(sinonChai).expect;
 var assertions = rewire('../lib/assertions');
