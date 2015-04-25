@@ -2,20 +2,15 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
-var rewire = require('rewire');
 var expect = require('chai').use(sinonChai).expect;
-var extend = rewire('../../lib/utils/extend');
+var extend = require('../../lib/utils/extend');
 
 describe('extend', function() {
-  var getters;
   var Parent;
 
   beforeEach(function() {
     Parent = sinon.spy();
     Parent.extend = extend;
-
-    getters = sinon.spy();
-    extend.__set__('getters', getters);
   });
 
   it('should inherit the child from its parent', function() {
@@ -37,10 +32,14 @@ describe('extend', function() {
   });
 
   it('should assign prototype properties from options', function() {
-    var protoProps = {};
+    var protoProps = {
+      foo: function() {},
+      get bar() {}
+    };
     var Child = Parent.extend(protoProps);
 
-    expect(getters).to.have.been.calledWith(Child.prototype, protoProps);
+    expect(Child.prototype).to.have.property('foo', protoProps.foo);
+    expect(Child.prototype).to.have.property('bar', protoProps.bar);
   });
 
   it('should assign static properties from options', function() {
