@@ -2,6 +2,7 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
+var Q = require('Q');
 var rewire = require('rewire');
 var expect = require('chai').use(sinonChai).expect;
 var assertions = rewire('../lib/assertions');
@@ -9,6 +10,7 @@ var assertions = rewire('../lib/assertions');
 // TODO: clean this up (or remove chai entirely?)
 
 describe('Assertions', function() {
+  var CountAssertion;
   var assert;
   var assertable;
   var chai;
@@ -19,6 +21,8 @@ describe('Assertions', function() {
   var component;
 
   beforeEach(function() {
+    CountAssertion = sinon.stub();
+
     assert = sinon.spy(function(name, callback) {
       return callback;
     });
@@ -49,6 +53,16 @@ describe('Assertions', function() {
       is: function() {}
     });
 
+    Object.defineProperty(component, 'items', {
+      get: function() {
+        return {
+          count: function() {
+            return Q.resolve(2);
+          }
+        };
+      }
+    });
+
     context = sinon.stub({
       assert: function() {}
     });
@@ -56,6 +70,7 @@ describe('Assertions', function() {
     properties = {};
     methods = {};
 
+    assertions.__set__('CountAssertion', CountAssertion);
     assertions.__set__('assert', assert);
   });
 
@@ -105,17 +120,20 @@ describe('Assertions', function() {
     expect(properties.not()).to.equal(context);
   });
 
-  it('should register have', function() {
+  it('should register have assertion', function() {
     var have = chai.Assertion.addChainableMethod.withArgs('have');
+    var assertion = {};
 
+    CountAssertion.returns(assertion);
     assertions(chai, utils);
 
     var assertCallback = have.firstCall.args[1];
     var chainCallback = have.firstCall.args[2];
+    var countAssertion = assertCallback.call(context, 2);
 
-    expect(assertCallback.call(context, 2)).to.equal(context);
+    expect(CountAssertion).to.have.been.calledWith(context, 2);
+    expect(countAssertion).to.equal(assertion);
     expect(chainCallback.call(context)).to.equal(context);
-    expect(utils.flag).to.have.been.calledWith(context, 'count', 2);
   });
 
   it('should flag all', function() {

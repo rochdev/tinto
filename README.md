@@ -23,6 +23,11 @@ searchButton.should.have.text('Search');
 searchButton.should.be.enabled;
 ```
 
+##### Count assertion
+```js
+grid.should.have(3).rows;
+```
+
 ##### Multiple assertions
 ```js
 searchButton.should.have.text('Search').and.be.enabled;
