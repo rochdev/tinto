@@ -4,16 +4,23 @@ var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var Q = require('q');
 var expect = require('chai').use(sinonChai).expect;
+var mockery = require('mockery');
 
 describe('Queue', function() {
   var queue;
 
   beforeEach(function() {
+    mockery.enable({
+      useCleanCache: true,
+      warnOnUnregistered: false
+    });
+
     queue = require('../lib/queue');
   });
 
   afterEach(function() {
-    delete require.cache[require.resolve('../lib/queue')];
+    mockery.deregisterAll();
+    mockery.disable();
   });
 
   it('should add an item to the queue', function() {
