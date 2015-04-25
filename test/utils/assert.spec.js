@@ -6,6 +6,7 @@ var Q = require('q');
 var rewire = require('rewire');
 var expect = require('chai').use(sinonChai).expect;
 var assert = rewire('../../lib/utils/assert');
+var AssertionResult = require('../../lib/assertion-result');
 
 describe('assert', function() {
   var assertable;
@@ -70,7 +71,7 @@ describe('assert', function() {
   });
 
   it('should assert a false result when waiting', function() {
-    wait.until.returns(Q.resolve([false, 'bar']));
+    wait.until.returns(Q.resolve(new AssertionResult(false, 'bar')));
 
     return test(false, false, true).then(function() {
       expect(wait.until).to.have.been.calledWith(matcher, false);
@@ -78,7 +79,7 @@ describe('assert', function() {
   });
 
   it('should assert a true result when waiting', function() {
-    wait.until.returns(Q.resolve([true, 'bar']));
+    wait.until.returns(Q.resolve(new AssertionResult(true, 'bar')));
 
     return test(true, false, true).then(function() {
       expect(wait.until).to.have.been.calledWith(matcher, false);
@@ -86,7 +87,7 @@ describe('assert', function() {
   });
 
   it('should assert a false result when negated and waiting', function() {
-    wait.until.returns(Q.resolve([false, 'bar']));
+    wait.until.returns(Q.resolve(new AssertionResult(false, 'bar')));
 
     return test(false, true, true).then(function() {
       expect(wait.until).to.have.been.calledWith(matcher, true);
@@ -94,7 +95,7 @@ describe('assert', function() {
   });
 
   it('should assert a true result when negated and waiting', function() {
-    wait.until.returns(Q.resolve([true, 'bar']));
+    wait.until.returns(Q.resolve(new AssertionResult(true, 'bar')));
 
     return test(true, true, true).then(function() {
       expect(wait.until).to.have.been.calledWith(matcher, true);
@@ -102,7 +103,7 @@ describe('assert', function() {
   });
 
   it('should delegate the actual assertion when using the `delegate` flag', function() {
-    callback.withArgs(assertable).returns(matcher.returns(Q.resolve([true, 'bar'])));
+    callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(true, 'bar'))));
     utils.flag.withArgs(context, 'delegate').returns(true);
 
     var delegator = assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo');
@@ -121,7 +122,7 @@ describe('assert', function() {
   });
 
   function test(result, negate, eventually) {
-    callback.withArgs(assertable).returns(matcher.returns(Q.resolve([result, 'bar'])));
+    callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(result, 'bar'))));
 
     utils.flag.withArgs(context, 'negate').returns(negate);
     utils.flag.withArgs(context, 'eventually').returns(eventually);

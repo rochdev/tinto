@@ -170,8 +170,8 @@ describe('Component', function() {
     component.state('test', test);
 
     return component.is('test')().then(function(result) {
-      expect(result[0]).to.be.true;
-      expect(result[1]).to.be.false;
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.be.false;
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -184,8 +184,8 @@ describe('Component', function() {
     component.property('test', test);
 
     return component.has('test', 'a value')().then(function(result) {
-      expect(result[0]).to.be.true;
-      expect(result[1]).to.equal('a value');
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.equal('a value');
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -219,10 +219,10 @@ describe('Component', function() {
     var isSecond = component.is('second')();
 
     return Q.all([isFirst, isSecond]).then(function(results) {
-      expect(results[0][0]).to.be.true;
-      expect(results[0][1]).to.be.false;
-      expect(results[1][0]).to.be.false;
-      expect(results[1][1]).to.be.true;
+      expect(results[0].outcome).to.be.true;
+      expect(results[0].actual).to.be.false;
+      expect(results[1].outcome).to.be.false;
+      expect(results[1].actual).to.be.true;
     });
   });
 
@@ -240,10 +240,10 @@ describe('Component', function() {
     var hasSecond = component.has('second', 'second value')();
 
     return Q.all([hasFirst, hasSecond]).then(function(results) {
-      expect(results[0][0]).to.be.true;
-      expect(results[0][1]).to.equal('first value');
-      expect(results[1][0]).to.be.true;
-      expect(results[1][1]).to.equal('second value');
+      expect(results[0].outcome).to.be.true;
+      expect(results[0].actual).to.equal('first value');
+      expect(results[1].outcome).to.be.true;
+      expect(results[1].actual).to.equal('second value');
     });
   });
 
@@ -261,8 +261,8 @@ describe('Component', function() {
     component.state('test');
 
     return component.is('test')().then(function(result) {
-      expect(result[0]).to.be.true;
-      expect(result[1]).to.be.false;
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.be.false;
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -281,8 +281,8 @@ describe('Component', function() {
     component.property('test');
 
     return component.has('test', 'a value')().then(function(result) {
-      expect(result[0]).to.be.true;
-      expect(result[1]).to.equal('a value');
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.equal('a value');
       expect(test.thisValues[0]).to.equal(component);
     });
   });
