@@ -70,8 +70,8 @@ describe('ComponentCollection', function() {
       return expect(Component.firstCall.args[0]).to.eventually.be.rejected;
     });
 
-    it('should have a count', function() {
-      return components.count().then(function(length) {
+    it('should have a length', function() {
+      return components.length.then(function(length) {
         expect(length).to.equal(2);
       });
     });
