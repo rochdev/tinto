@@ -195,7 +195,7 @@ describe('Component', function() {
     }, 0);
   });
 
-  it('should store and execute a supported countable (number)', function() {
+  it('should store and execute a supported countable', function() {
     var items = sinon.spy(function() {
       return {
         length: 2
@@ -226,15 +226,16 @@ describe('Component', function() {
   });
 
   it('should store and execute a supported property', function() {
+    var value = ['foo', 'bar'];
     var test = sinon.spy(function() {
-      return 'a value';
+      return value;
     });
 
     component.property('test', test);
 
-    return component.has('test', 'a value')().then(function(result) {
+    return component.has('test', ['foo', 'bar'])().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.equal('a value');
+      expect(result.actual).to.equal(value);
       expect(test.thisValues[0]).to.equal(component);
     });
   });
