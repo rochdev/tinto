@@ -9,9 +9,9 @@ describe('CountAssertion', function() {
   var CountAssertion;
   var countAssertion;
   var component;
-  var test;
   var context;
   var assert;
+  var assertFn;
 
   beforeEach(function() {
     mockery.enable({
@@ -19,16 +19,13 @@ describe('CountAssertion', function() {
       warnOnUnregistered: false
     });
 
-    assert = sinon.spy(function(name, callback) {
-      return callback;
-    });
-
-    test = sinon.stub({
-      length: 2
-    });
+    assertFn = sinon.stub();
+    assertFn.returns('test');
+    assert = sinon.stub();
+    assert.returns(assertFn);
 
     component = sinon.stub({
-      test: test
+      has: function() {}
     });
 
     mockery.registerMock('../utils/assert', assert);
@@ -46,14 +43,20 @@ describe('CountAssertion', function() {
   });
 
   it('should register a count assertion', function() {
-    expect(countAssertion).to.have.property('test');
+    expect(countAssertion.test).to.equal('test');
     expect(assert).to.have.been.calledWith('test');
+    expect(assertFn).to.have.been.calledWith(2);
+    expect(assertFn.thisValues[0]).to.equal(context);
   });
 
-  it('should delegate to assert', function() {
+  it('should delegate to the component', function() {
+    component.has.returns('result');
     countAssertion.test;
 
-    expect(assert).to.have.been.called;
+    var result = assert.firstCall.args[1](component);
+
+    expect(component.has).to.have.been.calledWith(2, 'test');
+    expect(result).to.equal('result');
   });
 
   it('should not register a count assertion more than once', function() {
@@ -64,28 +67,5 @@ describe('CountAssertion', function() {
     countAssertion.test;
 
     expect(assert).to.have.been.calledOnce;
-  });
-
-  it('should have the right result', function() {
-    countAssertion.test;
-
-    var callback = assert.firstCall.args[1];
-
-    return expect(callback(component)()).to.eventually.deep.equal({
-      outcome: true,
-      actual: 2
-    });
-  });
-
-  it('should only allow asserting on collections', function() {
-    countAssertion.test;
-
-    var callback = assert.firstCall.args[1];
-
-    test.length = 'string';
-
-    expect(function() {
-      callback(component)();
-    }).to.throw();
   });
 });

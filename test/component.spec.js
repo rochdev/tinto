@@ -195,6 +195,22 @@ describe('Component', function() {
     }, 0);
   });
 
+  it('should store and execute a supported countable (number)', function() {
+    var items = sinon.spy(function() {
+      return {
+        length: 2
+      };
+    });
+
+    component.getter('items', items);
+
+    return component.has(2, 'items')().then(function(result) {
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.equal(2);
+      expect(items.thisValues[0]).to.equal(component);
+    });
+  });
+
   it('should store and execute a supported state', function() {
     var test = sinon.spy(function() {
       return true;
@@ -346,5 +362,17 @@ describe('Component', function() {
     expect(function() {
       component.has('test', 'first value')();
     }).to.throw('Unsupported property "test"');
+  });
+
+  it('should throw an error when trying to use a countable that is not a collection', function() {
+    var items = sinon.spy(function() {
+      return {};
+    });
+
+    component.getter('items', items);
+
+    expect(function() {
+      component.has(2, 'items')();
+    }).to.throw('Count assertions can only be applied to collections');
   });
 });
