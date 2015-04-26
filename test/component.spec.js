@@ -14,7 +14,7 @@ describe('Component', function() {
   var bundles;
   var queue;
   var extend;
-  var getters;
+  var descriptors;
   var element;
   var promise;
   var component;
@@ -30,8 +30,7 @@ describe('Component', function() {
 
     extend = sinon.spy(function() {return 'test';});
 
-    getters = sinon.stub();
-    getters.returns(['foo', 'bar']);
+    descriptors = sinon.stub();
 
     element = sinon.stub({
       findElements: function() {},
@@ -48,7 +47,7 @@ describe('Component', function() {
     Component.__set__('bundles', bundles);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
-    Component.__set__('getters', getters);
+    Component.__set__('descriptors', descriptors);
 
     component = new Component(promise);
   });
@@ -153,25 +152,40 @@ describe('Component', function() {
     expect(component.test).to.equal('world');
   });
 
-  it('should create getters', function() {
-    var props = {};
+  it('should create getters from functions', function() {
+    var props = {
+      foo: function() {return 'foo';},
+      get bar() {return 'bar';},
+      baz: 'baz'
+    };
+
+    descriptors.withArgs(props).returns({
+      foo: Object.getOwnPropertyDescriptor(props, 'foo'),
+      bar: Object.getOwnPropertyDescriptor(props, 'bar'),
+      baz: Object.getOwnPropertyDescriptor(props, 'baz')
+    });
 
     component.getters(props);
 
-    expect(getters).to.have.been.calledWith(component, props);
+    expect(descriptors).to.have.been.calledWith(props);
+    expect(component.foo).to.be.defined;
+    expect(component.foo).to.equal('foo');
+    expect(component.bar).to.be.defined;
+    expect(component.bar).to.equal('bar');
+    expect(component.baz).to.be.undefined;
   });
 
-  it('should create a count assertion from a getter', function() {
+  it('should create count assertions from getters', function(done) {
     component.getter('test', function() {});
 
-    expect(CountAssertion.register).to.have.been.calledWith('test');
-  });
+    descriptors.withArgs(component).returns({
+      test: Object.getOwnPropertyDescriptor(component, 'test')
+    });
 
-  it('should create count assertions from getters', function() {
-    component.getters();
-
-    expect(CountAssertion.register).to.have.been.calledWith('foo');
-    expect(CountAssertion.register).to.have.been.calledWith('bar');
+    setTimeout(function() {
+      expect(CountAssertion.register).to.have.been.calledWith('test');
+      done();
+    }, 0);
   });
 
   it('should store and execute a supported state', function() {
