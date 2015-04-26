@@ -7,6 +7,7 @@ var expect = require('chai').use(sinonChai).expect;
 var should = rewire('../../lib/utils/should');
 
 describe('should', function() {
+  var descriptors;
   var context;
   var chai;
 
@@ -19,13 +20,18 @@ describe('should', function() {
       this.__flags = 'flags';
     });
 
-    chai.Assertion.prototype.hello = 'world';
-
-    Object.defineProperty(chai.Assertion.prototype, 'foo', {
-      value: 'bar'
+    descriptors = sinon.stub();
+    descriptors.withArgs(chai.Assertion.prototype).returns({
+      foo: {
+        value: 'bar'
+      },
+      hello: {
+        value: 'world'
+      }
     });
 
     should.__set__('chai', chai);
+    should.__set__('descriptors', descriptors);
   });
 
   it('should contain registered assertions', function() {
