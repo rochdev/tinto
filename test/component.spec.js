@@ -167,11 +167,18 @@ describe('Component', function() {
 
     component.getters(props);
 
+    var foo = Object.getOwnPropertyDescriptor(component, 'foo');
+    var bar = Object.getOwnPropertyDescriptor(component, 'bar');
+
     expect(descriptors).to.have.been.calledWith(props);
     expect(component.foo).to.be.defined;
     expect(component.foo).to.equal('foo');
+    expect(foo).to.have.property('configurable', true);
+    expect(foo).to.have.property('enumerable', true);
     expect(component.bar).to.be.defined;
     expect(component.bar).to.equal('bar');
+    expect(bar).to.have.property('configurable', true);
+    expect(bar).to.have.property('enumerable', true);
     expect(component.baz).to.be.undefined;
   });
 
