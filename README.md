@@ -87,3 +87,6 @@ See the [example](example) folder for a complete example.
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
 
+## Credits
+
+This project was inspired by the excellent [Testatoo](http://www.testatoo.org) functional testing library for Java.
