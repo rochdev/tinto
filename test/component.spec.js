@@ -11,7 +11,7 @@ var expect = require('chai').use(sinonChai).expect;
 
 describe('Component', function() {
   var CountAssertion;
-  var bundles;
+  var tinto;
   var queue;
   var extend;
   var descriptors;
@@ -22,7 +22,7 @@ describe('Component', function() {
   beforeEach(function() {
     CountAssertion = sinon.stub({register: function() {}});
 
-    bundles = [];
+    tinto = {};
 
     queue = sinon.stub({
       push: function() {}
@@ -44,7 +44,7 @@ describe('Component', function() {
     promise = Q.resolve(element);
 
     Component.__set__('CountAssertion', CountAssertion);
-    Component.__set__('bundles', bundles);
+    Component.__set__('tinto', tinto);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
     Component.__set__('descriptors', descriptors);
@@ -297,17 +297,58 @@ describe('Component', function() {
     });
   });
 
+  it('should support html states', function() {
+    var test = sinon.spy(function() {
+      return true;
+    });
+
+    tinto.html = {
+      states: {
+        test: test
+      }
+    };
+
+    component.state('test');
+
+    return component.is('test')().then(function(result) {
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.be.false;
+      expect(test.thisValues[0]).to.equal(component);
+    });
+  });
+
+  it('should support html properties', function() {
+    var test = sinon.spy(function() {
+      return 'a value';
+    });
+
+    tinto.html = {
+      properties: {
+        test: test
+      }
+    };
+
+    component.property('test');
+
+    return component.has('test', 'a value')().then(function(result) {
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.equal('a value');
+      expect(test.thisValues[0]).to.equal(component);
+    });
+  });
+
   it('should support states from a bundle', function() {
     var test = sinon.spy(function() {
       return true;
     });
 
-    bundles.push({
+    tinto.test = {
       states: {
         test: test
       }
-    });
+    };
 
+    component.__bundle__ = 'test';
     component.state('test');
 
     return component.is('test')().then(function(result) {
@@ -322,12 +363,13 @@ describe('Component', function() {
       return 'a value';
     });
 
-    bundles.push({
+    tinto.test = {
       properties: {
         test: test
       }
-    });
+    };
 
+    component.__bundle__ = 'test';
     component.property('test');
 
     return component.has('test', 'a value')().then(function(result) {
@@ -338,7 +380,7 @@ describe('Component', function() {
   });
 
   it('should throw an error when trying to register a state that does not exist', function() {
-    bundles.push({states: {}});
+    tinto.html = {};
 
     expect(function() {
       component.state('test');
@@ -346,7 +388,7 @@ describe('Component', function() {
   });
 
   it('should throw an error when trying to register a property that does not exist', function() {
-    bundles.push({properties: {}});
+    tinto.html = {};
 
     expect(function() {
       component.property('test');
