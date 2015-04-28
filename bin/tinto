@@ -9,6 +9,7 @@ program
 
 program
   .command('component')
+  .description('create a new component')
   .action(component);
 
 program.parse(process.argv);
