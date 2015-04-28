@@ -79,6 +79,10 @@ var Grid = Component.extend({
 });
 ```
 
+### Command-line interface
+
+In order to use the CLI, you must install tinto globally. You can then run `tinto --help` to list available commands.
+
 ## Examples
 
 See the [example](example) folder for a complete example.
