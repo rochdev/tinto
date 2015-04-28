@@ -2,8 +2,13 @@
 
 var program = require('commander');
 var version = require('../package.json').version;
+var component = require('../commands/component');
 
 program
   .version(version);
+
+program
+  .command('component')
+  .action(component);
 
 program.parse(process.argv);

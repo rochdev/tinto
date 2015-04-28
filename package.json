@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "A functional testing framework for component-based web applications",
   "main": "index.js",
+  "bin": "./bin/tinto",
   "scripts": {
     "test": "./node_modules/.bin/jshint lib test && ./node_modules/.bin/jscs lib test && ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --recursive lib test"
   },
@@ -12,6 +13,7 @@
   "dependencies": {
     "chai": "^2.0.0",
     "commander": "^2.7.1",
+    "inquirer": "^0.8.2",
     "jquery": "^2.1.1",
     "lodash": "^3.6.0",
     "q": "^1.2.0",
