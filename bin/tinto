@@ -4,6 +4,7 @@ var program = require('commander');
 var version = require('../package.json').version;
 var component = require('../commands/component');
 var property = require('../commands/property');
+var state = require('../commands/state');
 
 program
   .version(version);
@@ -17,5 +18,10 @@ program
   .command('property [name]')
   .description('create a new property')
   .action(property);
+
+program
+  .command('state [name]')
+  .description('create a new state')
+  .action(state);
 
 program.parse(process.argv);
