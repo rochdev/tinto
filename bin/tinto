@@ -3,6 +3,7 @@
 var program = require('commander');
 var version = require('../package.json').version;
 var component = require('../commands/component');
+var property = require('../commands/property');
 
 program
   .version(version);
@@ -11,5 +12,10 @@ program
   .command('component')
   .description('create a new component')
   .action(component);
+
+program
+  .command('property [name]')
+  .description('create a new property')
+  .action(property);
 
 program.parse(process.argv);
