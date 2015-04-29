@@ -13,6 +13,7 @@
   "dependencies": {
     "chai": "^2.0.0",
     "commander": "^2.7.1",
+    "cucumber": "^0.4.8",
     "inquirer": "^0.8.2",
     "jquery": "^2.1.1",
     "lodash": "^3.6.0",
@@ -21,7 +22,6 @@
   },
   "devDependencies": {
     "chai-as-promised": "^5.0.0",
-    "cucumber": "^0.4.8",
     "istanbul": "^0.3.8",
     "jscs": "^1.11.3",
     "jshint": "^2.6.3",
