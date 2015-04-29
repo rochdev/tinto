@@ -1,0 +1,31 @@
+{
+  "name": "tinto-$name$",
+  "version": "0.0.0",
+  "description": "The tinto-$name$ bundle for Tinto",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/jshint lib test && ./node_modules/.bin/jscs lib test && ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --recursive lib test"
+  },
+  "author": "$username$",
+  "contributors": [],
+  "license": "MIT",
+  "dependencies": {
+    "tinto": "^0.1.0"
+  },
+  "devDependencies": {
+    "chai": "^2.0.0",
+    "chai-as-promised": "^5.0.0",
+    "istanbul": "^0.3.8",
+    "jscs": "^1.11.3",
+    "jshint": "^2.6.3",
+    "jshint-stylish": "^1.0.0",
+    "mocha": "^2.2.1",
+    "mockery": "^1.4.0",
+    "sinon": "^1.14.1",
+    "sinon-chai": "^2.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/$username$/tinto-$name$.git"
+  }
+}

@@ -2,12 +2,18 @@
 
 var program = require('commander');
 var version = require('../package.json').version;
+var bundle = require('../commands/bundle');
 var component = require('../commands/component');
 var property = require('../commands/property');
 var state = require('../commands/state');
 
 program
   .version(version);
+
+program
+  .command('bundle [folder]')
+  .description('create a new bundle project')
+  .action(bundle);
 
 program
   .command('component')
