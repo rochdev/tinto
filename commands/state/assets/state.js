@@ -1,8 +1,9 @@
 'use strict';
 
 /**
+ * @name $name$
  * @returns {Promise.<Boolean>}
  */
-function $name$() {}
+function $fn$() {}
 
-module.exports = $name$;
+module.exports = $fn$;
