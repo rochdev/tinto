@@ -72,9 +72,6 @@ module.exports = function(folder) {
     copy('../../test/.jshintrc', 'test/.jshintrc');
 
     write('lib/index.js', index);
-    write('lib/components/index.js', components);
-    write('lib/properties/index.js', properties);
-    write('lib/states/index.js', states);
 
     console.log('New bundle "tinto-' + _.kebabCase(answers.name) + '" created');
   });

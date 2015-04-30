@@ -1,12 +1,13 @@
 'use strict';
 
-/**
- * @namespace tinto.$name$
- */
-var $name$ = {
-  components: require('./components'),
-  properties: require('./properties'),
-  states: require('./states')
-};
+/** @namespace tinto.$name$ */
+module.exports = {
+  /** @namespace tinto.$name$.components */
+  components: {},
 
-module.exports = $name$;
+  /** @namespace tinto.$name$.properties */
+  properties: {},
+
+  /** @namespace tinto.$name$.states */
+  states: {}
+};
