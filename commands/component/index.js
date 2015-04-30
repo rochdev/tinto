@@ -23,6 +23,10 @@ module.exports = function() {
       }
     },
     {
+      name: 'bundle',
+      message: 'What is the bundle name of this component (leave blank for none)?'
+    },
+    {
       name: 'syntax',
       message: 'Which syntax would you like to use?',
       type: 'list',
@@ -45,8 +49,9 @@ module.exports = function() {
     var doc = asset('docblock.js').trim();
     var template = asset('component.' + answers.syntax + '.js')
       .replace(/\$doc\$/g, doc)
-      .replace(/\$name\$/g, answers.name)
-      .replace(/\$super\$/g, answers.super);
+      .replace(/\$class\$/g, answers.name)
+      .replace(/\$super\$/g, answers.super)
+      .replace(/\$name\$/g, (answers.bundle ? 'tinto.' + answers.bundle + '.components.' : '') + answers.name);
     var filename = _.kebabCase(answers.name) + '.js';
 
     fs.writeFileSync(filename, template);

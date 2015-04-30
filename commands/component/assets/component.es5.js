@@ -3,10 +3,10 @@
 var tinto = require('tinto');
 
 $doc$
-function $name$() {
+function $class$() {
   $super$.apply(this, arguments);
 }
 
-tinto.inherits($name$, $super$);
+tinto.inherits($class$, $super$);
 
-module.exports = $name$;
+module.exports = $class$;

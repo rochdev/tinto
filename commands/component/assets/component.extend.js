@@ -3,6 +3,9 @@
 var tinto = require('tinto');
 
 $doc$
-var $name$ = $super$.extend({});
+var $class$ = $super$.extend(
+  /** @lends $name$ */
+  {}
+);
 
-module.exports = $name$;
+module.exports = $class$;
