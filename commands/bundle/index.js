@@ -40,12 +40,6 @@ module.exports = function(folder) {
       .replace(/\$name\$/g, _.kebabCase(answers.name));
     var index = asset('index.js')
       .replace(/\$name\$/g, _.camelCase(answers.name));
-    var components = asset('components.js')
-      .replace(/\$name\$/g, _.camelCase(answers.name));
-    var properties = asset('properties.js')
-      .replace(/\$name\$/g, _.camelCase(answers.name));
-    var states = asset('states.js')
-      .replace(/\$name\$/g, _.camelCase(answers.name));
 
     if (folder) {
       fs.mkdirSync(folder);
