@@ -67,7 +67,7 @@ module.exports = function(folder) {
 
     write('lib/index.js', index);
 
-    console.log('New bundle "tinto-' + _.kebabCase(answers.name) + '" created');
+    console.log('New bundle "' + _.kebabCase(answers.name) + '" created');
   });
 
   function copy(source, destination) {
