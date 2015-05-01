@@ -6,10 +6,10 @@ var sinonChai = require('sinon-chai');
 var Q = require('q');
 var Attribute = require('../lib/attribute');
 var Component = rewire('../lib/component');
-var ComponentCollection = require('../lib/component-collection');
 var expect = require('chai').use(sinonChai).expect;
 
 describe('Component', function() {
+  var ComponentCollection;
   var CountAssertion;
   var tinto;
   var queue;
@@ -20,6 +20,7 @@ describe('Component', function() {
   var component;
 
   beforeEach(function() {
+    ComponentCollection = sinon.spy();
     CountAssertion = sinon.stub({register: function() {}});
 
     tinto = {};
@@ -43,6 +44,7 @@ describe('Component', function() {
 
     promise = Q.resolve(element);
 
+    Component.__set__('ComponentCollection', ComponentCollection);
     Component.__set__('CountAssertion', CountAssertion);
     Component.__set__('tinto', tinto);
     Component.__set__('queue', queue);
@@ -52,12 +54,34 @@ describe('Component', function() {
     component = new Component(promise);
   });
 
-  it('should be able to find sub-components', function() {
+  it('should be able to find sub-components by selector string', function() {
     var subComponents = component.find('#test');
 
     return promise.then(function() {
       expect(element.findElements).to.have.been.calledWithMatch({css: '#test'});
       expect(subComponents).to.be.instanceOf(ComponentCollection);
+    });
+  });
+
+  it('should be able to find sub-components by locator function', function() {
+    var locator = function() {
+      return 'test';
+    };
+
+    element.getDriver.returns({
+      executeScript: function(script, element, $, callback) {
+        return callback();
+      }
+    });
+
+    var subComponents = component.find(locator);
+
+    return promise.then(function() {
+      expect(subComponents).to.be.instanceOf(ComponentCollection);
+
+      return ComponentCollection.firstCall.args[0].then(function(value) {
+        expect(value).to.equal('test');
+      });
     });
   });
 
