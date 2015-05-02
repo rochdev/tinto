@@ -50,6 +50,7 @@ describe('flag', function() {
 
     var value = flag(object, 'foo');
 
+    expect(utils.flag).to.have.been.calledWithExactly(object, 'foo');
     expect(value).to.equal('bar');
   });
 });
