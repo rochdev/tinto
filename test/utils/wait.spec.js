@@ -38,4 +38,12 @@ describe('wait', function() {
       expect(result.outcome).to.be.true;
     });
   });
+
+  it('should rethrow if the runnable throws an exception', function() {
+    runnable.throws(new Error());
+
+    expect(function() {
+      wait.for(0).every(0).until(runnable, false);
+    }).to.throw();
+  });
 });
