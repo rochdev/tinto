@@ -15,27 +15,27 @@ describe('wait', function() {
   });
 
   it('should eventually resolve true when the runnable returns true', function() {
-    runnable.returns(Q.resolve(true));
+    runnable.returns(Q.resolve({outcome: true}));
 
     return wait.until(runnable, false).then(function(result) {
-      expect(result).to.be.true;
+      expect(result.outcome).to.be.true;
     });
   });
 
   it('should eventually resolve false when the runnable returns false', function() {
-    runnable.returns(Q.resolve(false));
+    runnable.returns(Q.resolve({outcome: false}));
 
     return wait.for(0).every(0).until(runnable, false).then(function(result) {
-      expect(result).to.be.false;
+      expect(result.outcome).to.be.false;
     });
   });
 
   it('should retry until the runnable returns true', function() {
-    runnable.onCall(0).returns(Q.resolve(false));
-    runnable.onCall(1).returns(Q.resolve(true));
+    runnable.onCall(0).returns(Q.resolve({outcome: false}));
+    runnable.onCall(1).returns(Q.resolve({outcome: true}));
 
     return wait.for(5).every(0).until(runnable, false).then(function(result) {
-      expect(result).to.be.true;
+      expect(result.outcome).to.be.true;
     });
   });
 });
