@@ -11,23 +11,14 @@ var AssertionResult = require('../../lib/assertion-result');
 describe('assert', function() {
   var assertable;
   var callback;
-  var chai;
+  var flag;
   var context;
   var queue;
-  var utils;
   var matcher;
   var wait;
 
   beforeEach(function() {
-    chai = {
-      use: function(plugin) {
-        plugin(this, utils);
-      }
-    };
-
-    utils = sinon.stub({
-      flag: function() {}
-    });
+    flag = sinon.stub();
 
     queue = sinon.stub({
       push: function() {}
@@ -49,7 +40,7 @@ describe('assert', function() {
 
     matcher = sinon.stub();
 
-    assert.__set__('chai', chai);
+    assert.__set__('flag', flag);
     assert.__set__('queue', queue);
     assert.__set__('wait', wait);
   });
@@ -104,7 +95,7 @@ describe('assert', function() {
 
   it('should delegate the actual assertion when using the `delegate` flag', function() {
     callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(true, 'bar'))));
-    utils.flag.withArgs(context, 'delegate').returns(true);
+    flag.withArgs(context, 'delegate').returns(true);
 
     var delegator = assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo');
 
@@ -124,9 +115,9 @@ describe('assert', function() {
   function test(result, negate, eventually) {
     callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(result, 'bar'))));
 
-    utils.flag.withArgs(context, 'negate').returns(negate);
-    utils.flag.withArgs(context, 'eventually').returns(eventually);
-    utils.flag.withArgs(context, 'object').returns(assertable);
+    flag.withArgs(context, 'negate').returns(negate);
+    flag.withArgs(context, 'eventually').returns(eventually);
+    flag.withArgs(context, 'object').returns(assertable);
 
     assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo');
 
