@@ -101,7 +101,7 @@ describe('assert', function() {
 
     expect(queue.push).not.to.have.been.called;
 
-    delegator(assertable);
+    delegator.call(context, assertable);
 
     expect(queue.push).to.have.been.called;
 

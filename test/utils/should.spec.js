@@ -10,8 +10,11 @@ describe('should', function() {
   var descriptors;
   var context;
   var chai;
+  var flag;
 
   beforeEach(function() {
+    flag = sinon.stub();
+
     chai = sinon.stub({
       expect: function() {}
     });
@@ -31,6 +34,7 @@ describe('should', function() {
     });
 
     should.__set__('chai', chai);
+    should.__set__('flag', flag);
     should.__set__('descriptors', descriptors);
   });
 
@@ -58,5 +62,39 @@ describe('should', function() {
     expect(firstAssertion.firstCall.args[0]).to.equal(context);
     expect(secondAssertion).to.have.been.called;
     expect(secondAssertion.firstCall.args[0]).to.equal(context);
+  });
+
+  describe('eventually', function() {
+    it('should contain registered assertions', function() {
+      expect(should().eventually).to.have.property('foo', 'bar');
+    });
+
+    it('should contain assertion flags', function() {
+      expect(should().eventually).to.have.property('__flags', 'flags');
+    });
+
+    it('should not overwrite its own values when asserting', function() {
+      Function.prototype.hello = 'test';
+
+      expect(should().eventually).to.have.property('hello', 'test');
+    });
+
+    it('should assert multiple delegated assertions', function() {
+      var firstAssertion = sinon.spy();
+      var secondAssertion = sinon.spy();
+
+      should().eventually(firstAssertion, secondAssertion);
+
+      expect(firstAssertion).to.have.been.calledWithMatch();
+      expect(firstAssertion.firstCall.args[0]).to.equal(context);
+      expect(secondAssertion).to.have.been.called;
+      expect(secondAssertion.firstCall.args[0]).to.equal(context);
+    });
+
+    it('should contain the eventually flag', function() {
+      var eventually = should().eventually;
+
+      expect(flag).to.have.been.calledWith(eventually, 'eventually', true);
+    });
   });
 });
