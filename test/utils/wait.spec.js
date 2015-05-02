@@ -2,16 +2,28 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
+var mockery = require('mockery');
 var Q = require('q');
-var rewire = require('rewire');
 var expect = require('chai').use(sinonChai).expect;
-var wait = rewire('../../lib/utils/wait');
 
 describe('wait', function() {
   var runnable;
+  var wait;
 
   beforeEach(function() {
+    mockery.enable({
+      useCleanCache: true,
+      warnOnUnregistered: false
+    });
+
+    wait = require('../../lib/utils/wait');
+
     runnable = sinon.stub();
+  });
+
+  afterEach(function() {
+    mockery.deregisterAll();
+    mockery.disable();
   });
 
   it('should eventually resolve true when the runnable returns true', function() {
@@ -45,5 +57,25 @@ describe('wait', function() {
     expect(function() {
       wait.for(0).every(0).until(runnable, false);
     }).to.throw();
+  });
+
+  it('should not retry if the total time has elapsed', function(done) {
+    var timeout = sinon.spy();
+
+    mockery.resetCache();
+    mockery.registerMock('./timeout', timeout);
+
+    wait = require('../../lib/utils/wait');
+
+    runnable.returns(Q.resolve({outcome: false}));
+
+    wait.for(5).every(0).until(runnable, false).then(function(result) {
+      expect(result.outcome).to.be.false;
+      done();
+    });
+
+    setTimeout(function() {
+      timeout.firstCall.args[0]();
+    }, 0);
   });
 });
