@@ -41,6 +41,19 @@ searchButton.should(
 );
 ```
 
+##### Awaiting assertion
+```js
+searchButton.should.eventually.be.enabled;
+```
+
+##### Awaiting assertion (alternate syntax)
+```js
+searchButton.should.eventually(
+  have.text('Search'),
+  be.enabled
+);
+```
+
 #### Attributes
 ```js
 searchButton.text.should.equal('Search');
