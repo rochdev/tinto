@@ -2,50 +2,95 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
-var rewire = require('rewire');
+var mockery = require('mockery');
 var expect = require('chai').use(sinonChai).expect;
 var Q = require('q');
-var tinto = rewire('../lib/tinto');
 
 describe('tinto', function() {
+  var tinto;
   var queue;
   var world;
   var given;
-  var when;
-  var then;
+  var before;
+  var after;
+  var callback;
+  var wrapper;
+  var step;
   var promise;
 
   beforeEach(function() {
+    mockery.enable({
+      useCleanCache: true,
+      warnOnUnregistered: false
+    });
+
     queue = sinon.stub({process: function() {}});
     given = sinon.stub();
-    when = sinon.stub();
-    then = sinon.stub();
+    before = sinon.stub();
+    after = sinon.stub();
 
     world = {
       Given: given,
-      When: when,
-      Then: then
+      When: given,
+      Then: given,
+      Before: before,
+      After: after
     };
 
     promise = Q.resolve();
 
     queue.process.returns(promise);
 
-    tinto.__set__('queue', queue);
-  });
+    mockery.registerMock('./queue', queue);
 
-  it('should wrap Cucumber step definition methods', function() {
-    var callback = sinon.spy();
-    var wrapper = tinto(function() {});
-    var step = sinon.spy();
+    tinto = require('../lib/tinto');
+
+    callback = sinon.spy();
+    wrapper = tinto(function() {});
+    step = sinon.spy();
 
     wrapper.call(world);
+  });
 
-    world.Given('step', step);
+  afterEach(function() {
+    mockery.deregisterAll();
+    mockery.disable();
+  });
 
-    expect(given).to.have.been.called;
+  it('should wrap Cucumber given step definition method', function() {
+    world.Given('foo', 'bar', step);
 
-    given.firstCall.args[1](callback);
+    assert(given);
+  });
+
+  it('should wrap Cucumber when step definition method', function() {
+    world.When('foo', 'bar', step);
+
+    assert(given);
+  });
+
+  it('should wrap Cucumber then step definition method', function() {
+    world.Then('foo', 'bar', step);
+
+    assert(given);
+  });
+
+  it('should wrap Cucumber before hook', function() {
+    world.Before('foo', 'bar', step);
+
+    assert(before);
+  });
+
+  it('should wrap Cucumber after hook', function() {
+    world.After('foo', 'bar', step);
+
+    assert(after);
+  });
+
+  function assert(method) {
+    expect(method).to.have.been.calledWith('foo', 'bar');
+
+    method.firstCall.args[2](callback);
 
     expect(step).to.have.been.called;
     expect(queue.process).to.have.been.called;
@@ -53,5 +98,5 @@ describe('tinto', function() {
     return promise.then(function() {
       expect(callback).to.have.been.called;
     });
-  });
+  }
 });
