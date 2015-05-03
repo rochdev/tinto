@@ -285,7 +285,7 @@ describe('Component', function() {
     });
   });
 
-  it('should store and execute supported states', function() {
+  it('should store and execute supported states as object', function() {
     component.states({
       first: function() {
         return true;
@@ -306,7 +306,24 @@ describe('Component', function() {
     });
   });
 
-  it('should store and execute supported properties', function() {
+  it('should store and execute supported states as string', function() {
+    tinto.test = {
+      states: {
+        first: function() {},
+        second: function() {}
+      }
+    };
+
+    component.__bundle__ = 'test';
+    component.states('first', 'second');
+
+    expect(StateAssertion.register).to.have.been.calledWith('first');
+    expect(StateAssertion.register).to.have.been.calledWith('second');
+    expect(component.first).to.be.defined;
+    expect(component.second).to.be.defined;
+  });
+
+  it('should store and execute supported properties as object', function() {
     component.properties({
       first: function() {
         return 'first value';
@@ -325,6 +342,21 @@ describe('Component', function() {
       expect(results[1].outcome).to.be.true;
       expect(results[1].actual).to.equal('second value');
     });
+  });
+
+  it('should store and execute supported properties as string', function() {
+    tinto.test = {
+      properties: {
+        first: function() {},
+        second: function() {}
+      }
+    };
+
+    component.__bundle__ = 'test';
+    component.properties('first', 'second');
+
+    expect(PropertyAssertion.register).to.have.been.calledWith('first');
+    expect(PropertyAssertion.register).to.have.been.calledWith('second');
   });
 
   it('should support html states', function() {
