@@ -96,6 +96,24 @@ describe('tinto', function() {
     assert(around);
   });
 
+  it('should not wrap the same world multiple times', function() {
+    var Given = world.Given;
+    var When = world.When;
+    var Then = world.Then;
+    var Before = world.Before;
+    var After = world.After;
+    var Around = world.Around;
+
+    tinto(function() {}).call(world);
+
+    expect(Given).to.equal(world.Given);
+    expect(When).to.equal(world.When);
+    expect(Then).to.equal(world.Then);
+    expect(Before).to.equal(world.Before);
+    expect(After).to.equal(world.After);
+    expect(Around).to.equal(world.Around);
+  });
+
   function assert(method) {
     expect(method).to.have.been.calledWith('foo', 'bar');
 
