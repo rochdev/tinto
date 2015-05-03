@@ -10,6 +10,8 @@ var expect = require('chai').use(sinonChai).expect;
 
 describe('Component', function() {
   var ComponentCollection;
+  var PropertyAssertion;
+  var StateAssertion;
   var CountAssertion;
   var tinto;
   var queue;
@@ -22,6 +24,8 @@ describe('Component', function() {
   beforeEach(function() {
     ComponentCollection = sinon.spy();
     CountAssertion = sinon.stub({register: function() {}});
+    PropertyAssertion = sinon.stub({register: function() {}});
+    StateAssertion = sinon.stub({register: function() {}});
 
     tinto = {};
 
@@ -45,6 +49,8 @@ describe('Component', function() {
     promise = Q.resolve(element);
 
     Component.__set__('ComponentCollection', ComponentCollection);
+    Component.__set__('PropertyAssertion', PropertyAssertion);
+    Component.__set__('StateAssertion', StateAssertion);
     Component.__set__('CountAssertion', CountAssertion);
     Component.__set__('tinto', tinto);
     Component.__set__('queue', queue);
@@ -441,5 +447,17 @@ describe('Component', function() {
     expect(function() {
       component.has(2, 'items')();
     }).to.throw('Count assertions can only be applied to collections');
+  });
+
+  it('should register assertions for its properties', function() {
+    component.property('test', function() {});
+
+    expect(PropertyAssertion.register).to.have.been.calledWith('test');
+  });
+
+  it('should register assertions for its states', function() {
+    component.state('test', function() {});
+
+    expect(StateAssertion.register).to.have.been.calledWith('test');
   });
 });
