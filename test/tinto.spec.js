@@ -13,6 +13,7 @@ describe('tinto', function() {
   var given;
   var before;
   var after;
+  var around;
   var callback;
   var wrapper;
   var step;
@@ -28,13 +29,15 @@ describe('tinto', function() {
     given = sinon.stub();
     before = sinon.stub();
     after = sinon.stub();
+    around = sinon.stub();
 
     world = {
       Given: given,
       When: given,
       Then: given,
       Before: before,
-      After: after
+      After: after,
+      Around: around
     };
 
     promise = Q.resolve();
@@ -85,6 +88,12 @@ describe('tinto', function() {
     world.After('foo', 'bar', step);
 
     assert(after);
+  });
+
+  it('should wrap Cucumber around hook', function() {
+    world.Around('foo', 'bar', step);
+
+    assert(around);
   });
 
   function assert(method) {
