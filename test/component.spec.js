@@ -441,6 +441,26 @@ describe('Component', function() {
     });
   });
 
+  it('should support contains', function() {
+    var context = sinon.stub({
+      contains: function() {}
+    });
+    var child = new Component(Q.resolve());
+
+    context.contains.returns(Q.resolve(true));
+
+    element.getDriver.returns({
+      executeScript: function(script, element, $, callback) {
+        return callback.apply(context);
+      }
+    });
+
+    return component.contains(child)().then(function(result) {
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.be.true;
+    });
+  });
+
   it('should throw an error when trying to register a state that does not exist', function() {
     tinto.html = {};
 
