@@ -461,6 +461,21 @@ describe('Component', function() {
     });
   });
 
+  it('should support equals', function() {
+    var child = new Component(Q.resolve(element));
+
+    element.getDriver.returns({
+      executeScript: function(script, element, $, callback) {
+        return callback.call(element, element);
+      }
+    });
+
+    return component.equals(child)().then(function(result) {
+      expect(result.outcome).to.be.true;
+      expect(result.actual).to.equal(child);
+    });
+  });
+
   it('should throw an error when trying to register a state that does not exist', function() {
     tinto.html = {};
 
