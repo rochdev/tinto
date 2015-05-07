@@ -18,6 +18,11 @@ A functional testing framework for component-based web applications
 searchButton.should.have.text('Search');
 ```
 
+##### Property assertion (alternate syntax)
+```js
+searchButton.text.should.equal('Search');
+```
+
 ##### State assertion
 ```js
 searchButton.should.be.enabled;
@@ -26,6 +31,16 @@ searchButton.should.be.enabled;
 ##### Count assertion
 ```js
 grid.should.have(3).rows;
+```
+
+##### Equality assertion
+```js
+grid.rows.at(0).should.equal(firstRow);
+```
+
+##### Containing assertion
+```js
+grid.should.contain(firstRow);
 ```
 
 ##### Multiple assertions
@@ -52,11 +67,6 @@ searchButton.should.eventually(
   have.text('Search'),
   be.enabled
 );
-```
-
-#### Attributes
-```js
-searchButton.text.should.equal('Search');
 ```
 
 ### Component definition
