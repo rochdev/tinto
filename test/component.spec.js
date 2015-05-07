@@ -20,6 +20,8 @@ describe('Component', function() {
   var element;
   var promise;
   var component;
+  var evaluator;
+  var uuid;
 
   beforeEach(function() {
     ComponentCollection = sinon.spy();
@@ -41,10 +43,19 @@ describe('Component', function() {
       findElements: function() {},
       getAttribute: function() {},
       getText: function() {},
-      getDriver: function() {},
       click: function() {},
       sendKeys: function() {}
     });
+
+    uuid = sinon.stub({
+      v4: function() {}
+    });
+    uuid.v4.returns('uuid');
+
+    evaluator = sinon.stub({
+      execute: function() {}
+    });
+    evaluator.execute.returns(Q.resolve());
 
     promise = Q.resolve(element);
 
@@ -56,6 +67,8 @@ describe('Component', function() {
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
     Component.__set__('descriptors', descriptors);
+    Component.__set__('uuid', uuid);
+    Component.__set__('evaluator', evaluator);
 
     component = new Component(promise);
   });
@@ -63,13 +76,25 @@ describe('Component', function() {
   it('should have a unique string identifier', function() {
     var name = component.toString();
 
-    expect(name).to.match(/\[Component:[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}]/);
+    expect(name).to.equal('[Component:uuid]');
+  });
+
+  it('should mark the DOM element with its identifier', function() {
+    var context = sinon.stub({
+      setAttribute: function() {}
+    });
+
+    expect(evaluator.execute).to.have.been.called;
+
+    evaluator.execute.firstCall.args[1].call(context, 'uuid');
+
+    expect(context.setAttribute).to.have.been.calledWithMatch('data-tinto-id', 'uuid');
   });
 
   it('should be able to find sub-components by selector string', function() {
     var subComponents = component.find('#test');
 
-    return promise.then(function() {
+    return component._element.then(function() {
       expect(element.findElements).to.have.been.calledWithMatch({css: '#test'});
       expect(subComponents).to.be.instanceOf(ComponentCollection);
     });
@@ -80,11 +105,9 @@ describe('Component', function() {
       return 'test';
     };
 
-    element.getDriver.returns({
-      executeScript: function(script, element, $, callback) {
-        return callback();
-      }
-    });
+    evaluator.execute = function(element, callback) {
+      return Q.resolve(callback());
+    };
 
     var subComponents = component.find(locator);
 
@@ -141,21 +164,10 @@ describe('Component', function() {
   });
 
   it('should execute scripts', function() {
-    var driver = sinon.stub({
-      executeScript: function() {}
-    });
+    var callback = function() {};
 
-    element.getDriver.returns(driver);
-
-    // TODO: find a way to test the callback context and arguments
-    return component.execute(function() {}).then(function() {
-      var el = driver.executeScript.firstCall.args[1];
-      var callback = driver.executeScript.firstCall.args[2];
-      var args = driver.executeScript.firstCall.args[3];
-
-      expect(driver.executeScript).to.have.been.called;
-
-      driver.executeScript.firstCall.args[0](el, callback, args);
+    return component.execute(callback, 1, 2).then(function() {
+      expect(evaluator.execute).to.have.been.calledWith(component._element, callback, 1, 2);
     });
   });
 
@@ -174,7 +186,7 @@ describe('Component', function() {
     var Test = sinon.spy(Component);
     var test = Test.from(component);
 
-    expect(Test).to.have.been.calledWith(promise);
+    expect(Test).to.have.been.calledWith(component._element);
     expect(test).to.be.instanceOf(Component);
   });
 
@@ -455,11 +467,9 @@ describe('Component', function() {
 
     context.contains.returns(Q.resolve(true));
 
-    element.getDriver.returns({
-      executeScript: function(script, element, $, callback) {
-        return callback.apply(context);
-      }
-    });
+    evaluator.execute = function(element, callback) {
+      return Q.resolve(callback.apply(context));
+    };
 
     return component.contains(child)().then(function(result) {
       expect(result.outcome).to.be.true;
@@ -470,11 +480,9 @@ describe('Component', function() {
   it('should support equals', function() {
     var child = new Component(Q.resolve(element));
 
-    element.getDriver.returns({
-      executeScript: function(script, element, $, callback) {
-        return callback.call(element, element);
-      }
-    });
+    evaluator.execute = function(context, callback) {
+      return Q.resolve(callback.call(element, element));
+    };
 
     return component.equals(child)().then(function(result) {
       expect(result.outcome).to.be.true;
