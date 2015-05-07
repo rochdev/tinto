@@ -60,6 +60,12 @@ describe('Component', function() {
     component = new Component(promise);
   });
 
+  it('should have a unique string identifier', function() {
+    var name = component.toString();
+
+    expect(name).to.match(/\[Component:[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}]/);
+  });
+
   it('should be able to find sub-components by selector string', function() {
     var subComponents = component.find('#test');
 
