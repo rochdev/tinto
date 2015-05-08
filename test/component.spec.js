@@ -254,6 +254,7 @@ describe('Component', function() {
 
     return component.has(2, 'items')().then(function(result) {
       expect(result.outcome).to.be.true;
+      expect(result.expected).to.equal(2);
       expect(result.actual).to.equal(2);
       expect(items.thisValues[0]).to.equal(component);
     });
@@ -268,7 +269,6 @@ describe('Component', function() {
 
     return component.is('test')().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.be.false;
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -283,7 +283,8 @@ describe('Component', function() {
 
     return component.has('test', ['foo', 'bar'])().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.equal(value);
+      expect(result.expected).to.deep.equal(value);
+      expect(result.actual).to.deep.equal(value);
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -318,9 +319,7 @@ describe('Component', function() {
 
     return Q.all([isFirst, isSecond]).then(function(results) {
       expect(results[0].outcome).to.be.true;
-      expect(results[0].actual).to.be.false;
       expect(results[1].outcome).to.be.false;
-      expect(results[1].actual).to.be.true;
     });
   });
 
@@ -356,8 +355,10 @@ describe('Component', function() {
 
     return Q.all([hasFirst, hasSecond]).then(function(results) {
       expect(results[0].outcome).to.be.true;
+      expect(results[0].expected).to.equal('first value');
       expect(results[0].actual).to.equal('first value');
       expect(results[1].outcome).to.be.true;
+      expect(results[1].expected).to.equal('second value');
       expect(results[1].actual).to.equal('second value');
     });
   });
@@ -392,7 +393,6 @@ describe('Component', function() {
 
     return component.is('test')().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.be.false;
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -412,6 +412,7 @@ describe('Component', function() {
 
     return component.has('test', 'a value')().then(function(result) {
       expect(result.outcome).to.be.true;
+      expect(result.expected).to.equal('a value');
       expect(result.actual).to.equal('a value');
       expect(test.thisValues[0]).to.equal(component);
     });
@@ -433,7 +434,6 @@ describe('Component', function() {
 
     return component.is('test')().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.be.false;
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -454,6 +454,7 @@ describe('Component', function() {
 
     return component.has('test', 'a value')().then(function(result) {
       expect(result.outcome).to.be.true;
+      expect(result.expected).to.equal('a value');
       expect(result.actual).to.equal('a value');
       expect(test.thisValues[0]).to.equal(component);
     });
@@ -473,20 +474,21 @@ describe('Component', function() {
 
     return component.contains(child)().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.be.true;
+      expect(result.expected).to.equal('[Component:uuid]');
     });
   });
 
   it('should support equals', function() {
-    var child = new Component(Q.resolve(element));
+    var clone = new Component(Q.resolve(element));
 
     evaluator.execute = function(context, callback) {
       return Q.resolve(callback.call(element, element));
     };
 
-    return component.equals(child)().then(function(result) {
+    return component.equals(clone)().then(function(result) {
       expect(result.outcome).to.be.true;
-      expect(result.actual).to.equal(child);
+      expect(result.expected).to.equal(component.toString());
+      expect(result.actual).to.equal(clone.toString());
     });
   });
 
