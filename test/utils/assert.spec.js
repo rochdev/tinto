@@ -96,6 +96,7 @@ describe('assert', function() {
   it('should delegate the actual assertion when using the `delegate` flag', function() {
     callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(true, 'bar'))));
     flag.withArgs(context, 'delegate').returns(true);
+    flag.withArgs(context, 'object').returns({});
 
     var delegator = assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo');
 
@@ -131,7 +132,7 @@ describe('assert', function() {
   }
 
   function buildMessage(not, eventually) {
-    var message = ['expected #{this}'];
+    var message = ['expected', context.toString()];
 
     if (not) {
       message.push('not');
