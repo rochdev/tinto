@@ -46,8 +46,8 @@ module.exports = function(folder) {
       process.chdir(folder);
     }
 
+    copy('assets/gitignore', '.gitignore');
     copy('../../.editorconfig', '.editorconfig');
-    copy('../../.gitignore', '.gitignore');
     copy('../../.jscsrc', '.jscsrc');
     copy('../../.jshintrc', '.jshintrc');
 
