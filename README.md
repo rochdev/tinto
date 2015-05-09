@@ -40,7 +40,7 @@ grid.rows.at(0).should.equal(firstRow);
 
 ##### Containing assertion
 ```js
-grid.should.contain(firstRow);
+grid.should.contain(firstRow, secondRow);
 ```
 
 ##### Multiple assertions
@@ -58,7 +58,7 @@ searchButton.should(
 
 ##### Awaiting assertion
 ```js
-searchButton.should.eventually.be.enabled;
+searchButton.should.eventually.have.text('Search').and.be.enabled;
 ```
 
 ##### Awaiting assertion (alternate syntax)
