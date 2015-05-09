@@ -1,17 +1,35 @@
 'use strict';
 
 var Q = require('q');
+var sinon = require('sinon');
 var Attribute = require('../lib/attribute');
 var expect = require('chai').expect;
 
 describe('Attribute', function() {
+  var component;
+  var name;
   var promise;
   var attribute;
+
+  beforeEach(function() {
+    component = sinon.stub({
+      toString: function() {}
+    });
+    component.toString.returns('[Component:uuid]');
+
+    name = 'test';
+  });
+
+  it('should have the correct string representation', function() {
+    attribute = new Attribute(component, name, promise);
+
+    expect(attribute.toString()).to.equal('property test of [Component:uuid]');
+  });
 
   describe('given a primitive value', function() {
     beforeEach(function() {
       promise = Q.resolve('test');
-      attribute = new Attribute(promise);
+      attribute = new Attribute(component, name, promise);
     });
 
     it('should assert to true for equality when actual and expected values match', function() {
@@ -48,7 +66,7 @@ describe('Attribute', function() {
   describe('given multiple primitive values', function() {
     beforeEach(function() {
       promise = Q.resolve('test');
-      attribute = new Attribute(promise);
+      attribute = new Attribute(component, name, promise);
     });
 
     it('should assert to true for containing when actual contains all expected', function() {
@@ -73,7 +91,7 @@ describe('Attribute', function() {
   describe('given an array', function() {
     beforeEach(function() {
       promise = Q.resolve(['foo', 'bar']);
-      attribute = new Attribute(promise);
+      attribute = new Attribute(component, name, promise);
     });
 
     it('should assert to true for equality when actual and expected values match', function() {
