@@ -472,9 +472,9 @@ describe('Component', function() {
       return Q.resolve(callback.apply(context));
     };
 
-    return component.contains(child)().then(function(result) {
-      expect(result.outcome).to.be.true;
-      expect(result.expected).to.equal('[Component:uuid]');
+    return component.contains(child)().then(function(results) {
+      expect(results[0].outcome).to.be.true;
+      expect(results[0].expected).to.equal('[Component:uuid]');
     });
   });
 

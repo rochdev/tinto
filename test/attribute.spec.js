@@ -31,16 +31,41 @@ describe('Attribute', function() {
     });
 
     it('should assert to true for containing when actual contains expected', function() {
-      return attribute.contains('es')().then(function(result) {
-        expect(result.outcome).to.be.true;
-        expect(result.expected).to.equal('es');
+      return attribute.contains('es')().then(function(results) {
+        expect(results[0].outcome).to.be.true;
+        expect(results[0].expected).to.equal('es');
       });
     });
 
     it('should assert to false for containing when actual does not contain expected', function() {
-      return attribute.contains('foo')().then(function(result) {
-        expect(result.outcome).to.be.false;
-        expect(result.expected).to.equal('foo');
+      return attribute.contains('foo')().then(function(results) {
+        expect(results[0].outcome).to.be.false;
+        expect(results[0].expected).to.equal('foo');
+      });
+    });
+  });
+
+  describe('given multiple primitive values', function() {
+    beforeEach(function() {
+      promise = Q.resolve('test');
+      attribute = new Attribute(promise);
+    });
+
+    it('should assert to true for containing when actual contains all expected', function() {
+      return attribute.contains('te', 'st')().then(function(results) {
+        expect(results[0].outcome).to.be.true;
+        expect(results[0].expected).to.equal('te');
+        expect(results[1].outcome).to.be.true;
+        expect(results[1].expected).to.equal('st');
+      });
+    });
+
+    it('should assert to false for containing when actual does not contain all expected', function() {
+      return attribute.contains('foo', 'bar')().then(function(results) {
+        expect(results[0].outcome).to.be.false;
+        expect(results[0].expected).to.equal('foo');
+        expect(results[1].outcome).to.be.false;
+        expect(results[1].expected).to.equal('bar');
       });
     });
   });
@@ -68,16 +93,20 @@ describe('Attribute', function() {
     });
 
     it('should assert to true for containing when actual contains expected', function() {
-      return attribute.contains('foo')().then(function(result) {
-        expect(result.outcome).to.be.true;
-        expect(result.expected).to.equal('foo');
+      return attribute.contains('foo', 'bar')().then(function(results) {
+        expect(results[0].outcome).to.be.true;
+        expect(results[0].expected).to.equal('foo');
+        expect(results[1].outcome).to.be.true;
+        expect(results[1].expected).to.equal('bar');
       });
     });
 
     it('should assert to false for containing when actual does not contain expected', function() {
-      return attribute.contains('baz')().then(function(result) {
-        expect(result.outcome).to.be.false;
-        expect(result.expected).to.equal('baz');
+      return attribute.contains('baz', 'qux')().then(function(results) {
+        expect(results[0].outcome).to.be.false;
+        expect(results[0].expected).to.equal('baz');
+        expect(results[1].outcome).to.be.false;
+        expect(results[1].expected).to.equal('qux');
       });
     });
   });
