@@ -29,16 +29,16 @@ describe('wait', function() {
   it('should eventually resolve true when the runnable returns true', function() {
     runnable.returns(Q.resolve({outcome: true}));
 
-    return wait.until(runnable, false).then(function(result) {
-      expect(result.outcome).to.be.true;
+    return wait.until(runnable, false).then(function(results) {
+      expect(results[0].outcome).to.be.true;
     });
   });
 
   it('should eventually resolve false when the runnable returns false', function() {
     runnable.returns(Q.resolve({outcome: false}));
 
-    return wait.for(0).every(0).until(runnable, false).then(function(result) {
-      expect(result.outcome).to.be.false;
+    return wait.for(0).every(0).until(runnable, false).then(function(results) {
+      expect(results[0].outcome).to.be.false;
     });
   });
 
@@ -46,8 +46,8 @@ describe('wait', function() {
     runnable.onCall(0).returns(Q.resolve({outcome: false}));
     runnable.onCall(1).returns(Q.resolve({outcome: true}));
 
-    return wait.for(5).every(0).until(runnable, false).then(function(result) {
-      expect(result.outcome).to.be.true;
+    return wait.for(5).every(0).until(runnable, false).then(function(results) {
+      expect(results[0].outcome).to.be.true;
     });
   });
 
@@ -69,13 +69,25 @@ describe('wait', function() {
 
     runnable.returns(Q.resolve({outcome: false}));
 
-    wait.for(5).every(0).until(runnable, false).then(function(result) {
-      expect(result.outcome).to.be.false;
+    wait.for(5).every(0).until(runnable, false).then(function(results) {
+      expect(results[0].outcome).to.be.false;
       done();
     });
 
     setTimeout(function() {
       timeout.firstCall.args[0]();
     }, 0);
+  });
+
+  it('should support multiple results', function() {
+    runnable.returns(Q.resolve([
+      {outcome: true},
+      {outcome: true}
+    ]));
+
+    return wait.until(runnable, false).then(function(results) {
+      expect(results[0].outcome).to.be.true;
+      expect(results[1].outcome).to.be.true;
+    });
   });
 });

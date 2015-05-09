@@ -112,6 +112,29 @@ describe('assert', function() {
     });
   });
 
+  it('should support multiple results', function() {
+    callback.withArgs(assertable).returns(matcher.returns(Q.all([
+      Q.resolve(new AssertionResult(true, 'foo', 'bar')),
+      Q.resolve(new AssertionResult(false, 'baz', 'qux'))
+    ])));
+
+    flag.withArgs(context, 'object').returns(assertable);
+
+    assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo', 'bar');
+
+    expect(queue.push).to.have.been.called;
+
+    return queue.push.firstCall.args[0]().then(function() {
+      expect(callback).to.have.been.calledWith(assertable, 'foo', 'bar');
+      expect(context.assert).to.have.been.calledWith(
+        true, buildMessage(false), buildMessage(true), 'foo', 'bar', true
+      );
+      expect(context.assert).to.have.been.calledWith(
+        false, buildMessage(false), buildMessage(true), 'baz', 'qux', true
+      );
+    });
+  });
+
   function test(result, negate, eventually) {
     callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(result, 'foo', 'bar'))));
 
