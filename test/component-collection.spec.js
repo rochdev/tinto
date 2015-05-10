@@ -22,12 +22,8 @@ describe('ComponentCollection', function() {
     Component = sinon.spy();
 
     mockery.registerMock('./utils/extend', extend);
-    mockery.registerMock('./component', Component);
 
-    ComponentCollection = require('../lib/component-collection', {
-      extend: extend,
-      Component: Component
-    });
+    ComponentCollection = require('../lib/component-collection');
   });
 
   afterEach(function() {
@@ -50,7 +46,7 @@ describe('ComponentCollection', function() {
 
     beforeEach(function() {
       promise = Q.resolve([1, 2]);
-      components = new ComponentCollection(promise);
+      components = new ComponentCollection(Component, promise);
     });
 
     it('should filter a component by index', function() {
@@ -92,6 +88,19 @@ describe('ComponentCollection', function() {
           expect(Component.firstCall.args[0]).to.eventually.equal(1),
           expect(Component.secondCall.args[0]).to.eventually.equal(2)
         ]);
+      });
+    });
+
+    it('should build a new collection of a different type', function() {
+      var Test = sinon.spy();
+      var tests = ComponentCollection.of(Test).from(components);
+      var test = tests.at(0);
+
+      expect(Test).to.have.been.called;
+      expect(test).to.be.instanceof(Test);
+
+      return Test.args[0][0].then(function(element) {
+        expect(element).to.equal(1);
       });
     });
   });

@@ -63,7 +63,7 @@ describe('Component', function() {
     Component.__set__('PropertyAssertion', PropertyAssertion);
     Component.__set__('StateAssertion', StateAssertion);
     Component.__set__('CountAssertion', CountAssertion);
-    Component.__set__('tinto', tinto);
+    Component.__set__('bundles', tinto);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
     Component.__set__('descriptors', descriptors);
@@ -113,8 +113,9 @@ describe('Component', function() {
 
     return promise.then(function() {
       expect(subComponents).to.be.instanceOf(ComponentCollection);
+      expect(ComponentCollection.firstCall.args[0]).to.equal(Component);
 
-      return ComponentCollection.firstCall.args[0].then(function(value) {
+      return ComponentCollection.firstCall.args[1].then(function(value) {
         expect(value).to.equal('test');
       });
     });
