@@ -55,7 +55,7 @@ describe('Component', function() {
     evaluator = sinon.stub({
       execute: function() {}
     });
-    evaluator.execute.returns(Q.resolve());
+    evaluator.execute.returns(Q.resolve('uuid'));
 
     promise = Q.resolve(element);
 
@@ -74,13 +74,16 @@ describe('Component', function() {
   });
 
   it('should have a unique string identifier', function() {
-    var name = component.toString();
+    promise.then(function() {
+      var name = component.toString();
 
-    expect(name).to.equal('[Component:uuid]');
+      expect(name).to.equal('[Component:uuid]');
+    });
   });
 
   it('should mark the DOM element with its identifier', function() {
     var context = sinon.stub({
+      getAttribute: function() {},
       setAttribute: function() {}
     });
 
@@ -89,6 +92,19 @@ describe('Component', function() {
     evaluator.execute.firstCall.args[1].call(context, 'uuid');
 
     expect(context.setAttribute).to.have.been.calledWithMatch('data-tinto-id', 'uuid');
+  });
+
+  it('should get its unique identifier from the DOM if already set', function() {
+    var context = sinon.stub({
+      getAttribute: function() {},
+      setAttribute: function() {}
+    });
+
+    context.getAttribute.returns('expected');
+
+    var identifier = evaluator.execute.firstCall.args[1].call(context, 'uuid');
+
+    expect(identifier).to.equal('expected');
   });
 
   it('should be able to find sub-components by selector string', function() {
