@@ -103,5 +103,18 @@ describe('ComponentCollection', function() {
         expect(element).to.equal(1);
       });
     });
+
+    it('should be able to cast itself to a collection of another component type', function() {
+      var Test = sinon.spy();
+      var tests = components.asListOf(Test);
+      var test = tests.at(0);
+
+      expect(Test).to.have.been.called;
+      expect(test).to.be.instanceof(Test);
+
+      return Test.args[0][0].then(function(element) {
+        expect(element).to.equal(1);
+      });
+    });
   });
 });
