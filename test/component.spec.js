@@ -137,6 +137,14 @@ describe('Component', function() {
     });
   });
 
+  it('should polyfill the :scope selector', function() {
+    component.find(':scope > test');
+
+    return component._element.then(function() {
+      expect(element.findElements).to.have.been.calledWithMatch({css: '[data-tinto-id="uuid"] > test'});
+    });
+  });
+
   it('should get its attributes', function() {
     element.getAttribute.withArgs('name').returns(Q.resolve('test'));
 
