@@ -145,6 +145,14 @@ describe('Component', function() {
     });
   });
 
+  it('should be able to cast itself to another component type', function() {
+    var Test = sinon.spy();
+    var test = component.as(Test);
+
+    expect(Test).to.have.been.calledWith(component._element);
+    expect(test).to.be.instanceof(Test);
+  });
+
   it('should get its attributes', function() {
     element.getAttribute.withArgs('name').returns(Q.resolve('test'));
 
