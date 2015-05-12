@@ -138,5 +138,14 @@ describe('ComponentCollection', function() {
         expect(element).to.equal(1);
       });
     });
+
+    it('should get its elements', function() {
+      var elements = components.getElements();
+
+      return Q.all([promise, elements]).then(function(results) {
+        expect(results[0][0]).to.equal(results[1][0]);
+        expect(results[0][1]).to.equal(results[1][1]);
+      });
+    });
   });
 });
