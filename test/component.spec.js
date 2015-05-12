@@ -153,6 +153,14 @@ describe('Component', function() {
     expect(test).to.be.instanceof(Test);
   });
 
+  it('should get its element', function() {
+    var result = component.getElement();
+
+    return Q.all([promise, result]).then(function(results) {
+      expect(results[0]).to.equal(results[1]);
+    });
+  });
+
   it('should get its attributes', function() {
     element.getAttribute.withArgs('name').returns(Q.resolve('test'));
 
