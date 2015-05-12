@@ -60,10 +60,20 @@ describe('ComponentCollection', function() {
       });
     });
 
-    it('should throw when a component retrieved by index does not exist', function() {
-      components.at(2);
+    it('should filter the first element', function() {
+      components.first();
 
-      return expect(Component.firstCall.args[0]).to.eventually.be.rejected;
+      return Q.all(Component.args[0][0]).then(function(value) {
+        expect(value).to.equal(1);
+      });
+    });
+
+    it('should filter the last element', function() {
+      components.last();
+
+      return Q.all(Component.args[0][0]).then(function(value) {
+        expect(value).to.equal(2);
+      });
     });
 
     it('should have a length', function() {
