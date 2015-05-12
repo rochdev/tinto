@@ -101,6 +101,18 @@ describe('ComponentCollection', function() {
       });
     });
 
+    it('should be mappable', function() {
+      var callback = sinon.stub();
+
+      callback.onFirstCall().returns(1);
+      callback.onSecondCall().returns(2);
+
+      return components.map(callback).then(function(values) {
+        expect(values[0]).to.equal(1);
+        expect(values[1]).to.equal(2);
+      });
+    });
+
     it('should build a new collection of a different type', function() {
       var Test = sinon.spy();
       var tests = ComponentCollection.of(Test).from(components);
