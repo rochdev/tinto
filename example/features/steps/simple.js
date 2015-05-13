@@ -9,7 +9,7 @@ module.exports = tinto(function() {
   this.Given(/^I visit TODOMVC$/, function() {
     tinto.browser.open('http://todomvc.com/examples/backbone/');
 
-    todoApp = TodoApp.from(tinto.browser.find('#todoapp'));
+    todoApp = TodoApp.from(tinto.browser.find('#todoapp').first());
   });
 
   this.When(/^I enter \"([^\"]*)\"$/, function(value) {
