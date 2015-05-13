@@ -28,7 +28,7 @@ module.exports = function(name) {
 
     var template = asset('state.js')
       .replace(/\$fn\$/g, answers.name)
-      .replace(/\$name\$/g, (answers.bundle ? 'tinto.' + answers.bundle + '.states.' : '') + answers.name);
+      .replace(/\$memberof\$/g, answers.bundle ? '\n * @memberOf tinto.' + answers.bundle + '.states' : '');
     var filename = _.kebabCase(answers.name) + '.js';
 
     fs.writeFileSync(filename, template);

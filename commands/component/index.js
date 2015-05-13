@@ -51,7 +51,7 @@ module.exports = function() {
       .replace(/\$doc\$/g, doc)
       .replace(/\$class\$/g, answers.name)
       .replace(/\$super\$/g, answers.super)
-      .replace(/\$name\$/g, (answers.bundle ? 'tinto.' + answers.bundle + '.components.' : '') + answers.name);
+      .replace(/\$memberof\$/g, answers.bundle ? '\n * @memberOf tinto.' + answers.bundle + '.components' : '');
     var filename = _.kebabCase(answers.name) + '.js';
 
     fs.writeFileSync(filename, template);

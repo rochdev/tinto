@@ -1,5 +1,4 @@
-/**
- * @name $name$
+/**$memberof$
  * @param {Promise} locator
  * @extends $super$
  * @constructor

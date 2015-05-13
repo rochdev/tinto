@@ -1,7 +1,7 @@
 'use strict';
 
-/**
- * @name $name$
+/**$memberof$
+ * @this tinto.Component
  * @returns {Promise.<Boolean>}
  */
 function $fn$() {}
