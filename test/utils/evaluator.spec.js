@@ -10,6 +10,7 @@ describe('evaluator', function() {
   var evaluator;
   var element;
   var promise;
+  var driver;
 
   beforeEach(function() {
     mockery.enable({
@@ -18,12 +19,20 @@ describe('evaluator', function() {
     });
 
     element = sinon.stub({
-      getDriver: function() {}
+      getDriver: function() {},
+      findElements: function() {},
+      getAttribute: function() {}
     });
 
     promise = Q.resolve(element);
 
     evaluator = require('../../lib/utils/evaluator');
+
+    driver = sinon.stub({
+      executeScript: function() {}
+    });
+
+    element.getDriver.returns(driver);
   });
 
   afterEach(function() {
@@ -32,12 +41,6 @@ describe('evaluator', function() {
   });
 
   it('should execute a script on the client', function() {
-    var driver = sinon.stub({
-      executeScript: function() {}
-    });
-
-    element.getDriver.returns(driver);
-
     // TODO: find a way to test the callback context and arguments
     var evaluated = evaluator.execute(promise, function() {}).then(function() {
       var el = driver.executeScript.firstCall.args[1];
@@ -50,5 +53,35 @@ describe('evaluator', function() {
     });
 
     return evaluated;
+  });
+
+  it('should be able to find descendants by locator function', function() {
+    // TODO: refactor not to test implementation
+    var locator = function() {};
+
+    evaluator.execute = sinon.stub();
+    evaluator.execute.returns('elements');
+
+    var elements = evaluator.find(promise, locator);
+
+    expect(evaluator.execute).to.have.been.calledWith(promise, locator);
+    expect(elements).to.equal('elements');
+  });
+
+  it('should be able to find descendants by selector string', function() {
+    element.findElements.withArgs(sinon.match({css: '#test'})).returns('elements');
+    element.getAttribute.withArgs('data-tinto-id').returns(Q.resolve('uuid'));
+
+    return evaluator.find(promise, '#test').then(function(elements) {
+      expect(elements).to.equal('elements');
+    });
+  });
+
+  it('should polyfill the :scope selector', function() {
+    element.getAttribute.withArgs('data-tinto-id').returns(Q.resolve('uuid'));
+
+    return evaluator.find(promise, ':scope > test').then(function() {
+      expect(element.findElements).to.have.been.calledWithMatch({css: '[data-tinto-id="uuid"] > test'});
+    });
   });
 });
