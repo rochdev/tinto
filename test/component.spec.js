@@ -53,9 +53,11 @@ describe('Component', function() {
     uuid.v4.returns('uuid');
 
     evaluator = sinon.stub({
-      execute: function() {}
+      execute: function() {},
+      find: function() {}
     });
     evaluator.execute.returns(Q.resolve('uuid'));
+    evaluator.find.returns(Q.resolve('component'));
 
     promise = Q.resolve(element);
 
@@ -107,41 +109,13 @@ describe('Component', function() {
     expect(identifier).to.equal('expected');
   });
 
-  it('should be able to find sub-components by selector string', function() {
+  it('should be able to find sub-components', function() {
     var subComponents = component.find('#test');
 
-    return component._element.then(function() {
-      expect(element.findElements).to.have.been.calledWithMatch({css: '#test'});
-      expect(subComponents).to.be.instanceOf(ComponentCollection);
-    });
-  });
+    expect(subComponents).to.be.instanceOf(ComponentCollection);
 
-  it('should be able to find sub-components by locator function', function() {
-    var locator = function() {
-      return 'test';
-    };
-
-    evaluator.execute = function(element, callback) {
-      return Q.resolve(callback());
-    };
-
-    var subComponents = component.find(locator);
-
-    return promise.then(function() {
-      expect(subComponents).to.be.instanceOf(ComponentCollection);
-      expect(ComponentCollection.firstCall.args[0]).to.equal(Component);
-
-      return ComponentCollection.firstCall.args[1].then(function(value) {
-        expect(value).to.equal('test');
-      });
-    });
-  });
-
-  it('should polyfill the :scope selector', function() {
-    component.find(':scope > test');
-
-    return component._element.then(function() {
-      expect(element.findElements).to.have.been.calledWithMatch({css: '[data-tinto-id="uuid"] > test'});
+    return ComponentCollection.firstCall.args[1].then(function() {
+      expect(evaluator.find).to.have.been.calledWith(component._element, '#test');
     });
   });
 
