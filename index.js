@@ -26,6 +26,7 @@ module.exports.keyboard = require('./lib/utils/keyboard');
 module.exports.done = queue.process.bind(queue);
 module.exports.be = require('./lib/utils/delegate');
 module.exports.have = require('./lib/utils/delegate');
+module.exports.load = require('./lib/utils/load');
 // TODO: not with negate=true
 
 // TODO: replace with built in assertions

@@ -8,7 +8,7 @@ var TodoApp = tinto.Component.extend({
   },
 
   get todos() {
-    return this.find('#todo-list li');
+    return this.find('#todo-list li').asListOf(tinto.html.components.Item);
   }
 });
 
