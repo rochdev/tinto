@@ -40,7 +40,7 @@ describe('tinto', function() {
       Around: around
     };
 
-    promise = Q.resolve();
+    promise = Q.resolve('test');
 
     queue.process.returns(promise);
 
@@ -63,37 +63,37 @@ describe('tinto', function() {
   it('should wrap Cucumber given step definition method', function() {
     world.Given('foo', 'bar', step);
 
-    assert(given);
+    return assert(given);
   });
 
   it('should wrap Cucumber when step definition method', function() {
     world.When('foo', 'bar', step);
 
-    assert(given);
+    return assert(given);
   });
 
   it('should wrap Cucumber then step definition method', function() {
     world.Then('foo', 'bar', step);
 
-    assert(given);
+    return assert(given);
   });
 
   it('should wrap Cucumber before hook', function() {
     world.Before('foo', 'bar', step);
 
-    assert(before);
+    return assert(before);
   });
 
   it('should wrap Cucumber after hook', function() {
     world.After('foo', 'bar', step);
 
-    assert(after);
+    return assert(after);
   });
 
   it('should wrap Cucumber around hook', function() {
     world.Around('foo', 'bar', step);
 
-    assert(around);
+    return assert(around);
   });
 
   it('should not wrap the same world multiple times', function() {
@@ -123,7 +123,7 @@ describe('tinto', function() {
     expect(queue.process).to.have.been.called;
 
     return promise.then(function() {
-      expect(callback).to.have.been.called;
+      expect(callback).to.have.been.calledWithExactly();
     });
   }
 });
