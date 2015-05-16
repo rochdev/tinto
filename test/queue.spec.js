@@ -75,7 +75,7 @@ describe('Queue', function() {
     expect(queue.length).to.equal(0);
   });
 
-  it('should process items in the correct order', function(done) {
+  it('should process items in the correct order', function() {
     var firstItem = sinon.spy(function() {
       return Q.resolve();
     });
@@ -90,14 +90,14 @@ describe('Queue', function() {
 
     queue.push(firstItem, secondItem, thirdItem);
 
-    queue.process().then(function() {
+    return queue.process().then(function() {
       expect(firstItem).to.have.been.called;
       expect(secondItem).to.have.been.calledAfter(firstItem);
       expect(thirdItem).to.have.been.calledAfter(secondItem);
-    }).then(done).done();
+    });
   });
 
-  it('should wait for the promise to be resolved before going to the next item', function(done) {
+  it('should wait for the promise to be resolved before going to the next item', function() {
     var firstSpy = sinon.spy();
     var secondSpy = sinon.spy();
     var thirdSpy = sinon.spy();
@@ -124,14 +124,15 @@ describe('Queue', function() {
     };
 
     queue.push(firstItem, secondItem, thirdItem);
-    queue.process().then(function() {
+
+    return queue.process().then(function() {
       expect(firstSpy).to.have.been.called;
       expect(secondSpy).to.have.been.calledAfter(firstSpy);
       expect(thirdSpy).to.have.been.calledAfter(secondSpy);
-    }).then(done).done();
+    });
   });
 
-  it('should wait for the previous call to process to finish before processing again', function(done) {
+  it('should wait for the previous call to process to finish before processing again', function() {
     var firstSpy = sinon.spy();
     var secondSpy = sinon.spy();
 
@@ -155,9 +156,20 @@ describe('Queue', function() {
     queue.process();
     queue.push(secondItem);
 
-    queue.process().then(function() {
+    return queue.process().then(function() {
       expect(firstSpy).to.have.been.called;
       expect(secondSpy).to.have.been.calledAfter(firstSpy);
-    }).then(done).done();
+    });
+  });
+
+  it('should process again even if the previous processing failed', function() {
+    var failure = sinon.stub().returns(Q.reject());
+    var success = sinon.stub().returns(Q.resolve());
+
+    queue.push(failure);
+    queue.process();
+    queue.push(success);
+
+    return expect(queue.process()).to.eventually.be.fulfilled;
   });
 });
