@@ -558,4 +558,28 @@ describe('Component', function() {
 
     expect(StateAssertion.register).to.have.been.calledWith('test');
   });
+
+  it('should be available when the element can be found', function() {
+    return expect(component.is('available')()).to.eventually.have.property('outcome', true);
+  });
+
+  it('should be missing when the element cannot be found', function() {
+    promise = Q.reject();
+
+    component = new Component(promise);
+
+    return expect(component.is('missing')()).to.eventually.have.property('outcome', true);
+  });
+
+  it('should not be available when the element cannot be found', function() {
+    promise = Q.reject();
+
+    component = new Component(promise);
+
+    return expect(component.is('available')()).to.eventually.have.property('outcome', false);
+  });
+
+  it('should not be missing when the element can be found', function() {
+    return expect(component.is('missing')()).to.eventually.have.property('outcome', false);
+  });
 });
