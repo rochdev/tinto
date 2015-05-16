@@ -8,15 +8,13 @@ var Q = require('q');
 var Browser = rewire('../lib/browser');
 
 describe('Browser', function() {
-  var Component;
-  var ComponentCollection;
+  var Page;
   var browser;
   var webdriver;
   var builder;
   var forBrowser;
   var driver;
   var queue;
-  var evaluator;
 
   beforeEach(function() {
     queue = sinon.stub({process: function() {}, push: function() {}});
@@ -34,17 +32,11 @@ describe('Browser', function() {
     forBrowser.build.returns(driver);
     queue.process.returns(Q.resolve());
 
-    evaluator = sinon.stub({find: function() {}});
-    evaluator.find.returns('elements');
-
-    Component = sinon.spy();
-    ComponentCollection = sinon.spy();
+    Page = sinon.spy();
 
     Browser.__set__('webdriver', webdriver);
     Browser.__set__('queue', queue);
-    Browser.__set__('evaluator', evaluator);
-    Browser.__set__('Component', Component);
-    Browser.__set__('ComponentCollection', ComponentCollection);
+    Browser.__set__('Page', Page);
 
     browser = new Browser();
   });
@@ -95,17 +87,16 @@ describe('Browser', function() {
     }).not.to.throw();
   });
 
-  it('should find components', function() {
+  it('should get its page', function() {
     var element = {};
 
     browser.open();
     driver.findElement.returns(element);
 
-    var components = browser.find('test');
+    var page = browser.getPage();
 
+    expect(page).to.be.instanceof(Page);
     expect(driver.findElement).to.have.been.calledWithMatch({css: 'html'});
-    expect(components).to.be.instanceof(ComponentCollection);
-    expect(ComponentCollection).to.have.been.calledWith(Component, 'elements');
-    expect(evaluator.find).to.have.been.calledWith(element, 'test');
+    expect(Page).to.have.been.calledWith(element);
   });
 });

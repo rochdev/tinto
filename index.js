@@ -29,6 +29,14 @@ module.exports.have = require('./lib/utils/delegate');
 module.exports.load = require('./lib/utils/load');
 // TODO: not with negate=true
 
+/**
+ * @name tinto.page
+ * @type {tinto.Page}
+ */
+Object.defineProperty(module.exports, 'page', {
+  get: browser.getPage.bind(browser)
+});
+
 // TODO: replace with built in assertions
 chai.use(require('./lib/assertions'));
 
