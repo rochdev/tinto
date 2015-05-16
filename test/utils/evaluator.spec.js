@@ -11,6 +11,7 @@ describe('evaluator', function() {
   var element;
   var promise;
   var driver;
+  var ElementNotFoundError;
 
   beforeEach(function() {
     mockery.enable({
@@ -26,6 +27,7 @@ describe('evaluator', function() {
 
     promise = Q.resolve(element);
 
+    ElementNotFoundError = require('../../lib/errors/element-not-found-error');
     evaluator = require('../../lib/utils/evaluator');
 
     driver = sinon.stub({
@@ -83,5 +85,17 @@ describe('evaluator', function() {
     return evaluator.find(promise, ':scope > test').then(function() {
       expect(element.findElements).to.have.been.calledWithMatch({css: '[data-tinto-id="uuid"] > test'});
     });
+  });
+
+  it('should throw an error when executing on a missing element', function() {
+    promise = Q.resolve();
+
+    return expect(evaluator.execute(promise)).to.eventually.be.rejectedWith(ElementNotFoundError);
+  });
+
+  it('should throw an error when finding on a missing element', function() {
+    promise = Q.resolve();
+
+    return expect(evaluator.find(promise, 'missing')).to.eventually.be.rejectedWith(ElementNotFoundError);
   });
 });
