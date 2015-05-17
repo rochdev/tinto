@@ -147,6 +147,7 @@ describe('assert', function() {
     expect(queue.push).to.have.been.called;
 
     return queue.push.firstCall.args[0]().then(function() {
+      expect(callback).to.have.been.calledOn(context);
       expect(context.assert).to.have.been.calledWith(
         result, buildMessage(false, eventually), buildMessage(true, eventually), 'foo', 'bar', !negate
       );
