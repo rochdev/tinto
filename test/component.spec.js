@@ -284,6 +284,18 @@ describe('Component', function() {
 
     return component.is('test')().then(function(result) {
       expect(result.outcome).to.be.true;
+    });
+  });
+
+  it('should support state arguments', function() {
+    var test = sinon.spy(function(value) {
+      return value;
+    });
+
+    component.state('test', test, [true]);
+
+    return component.is('test')().then(function(result) {
+      expect(result.outcome).to.be.true;
       expect(test.thisValues[0]).to.equal(component);
     });
   });
@@ -304,6 +316,18 @@ describe('Component', function() {
     });
   });
 
+  it('should support property arguments', function() {
+    var test = sinon.spy(function(foo) {
+      return foo;
+    });
+
+    component.property('test', test, ['foo']);
+
+    return component.has('test', 'foo')().then(function(result) {
+      expect(result.outcome).to.be.true;
+    });
+  });
+
   it('should store a supported property as an attribute', function() {
     var test = sinon.spy(function() {
       return 'a value';
@@ -315,7 +339,6 @@ describe('Component', function() {
 
     return component.test.value.then(function(result) {
       expect(result).to.equal('a value');
-      expect(test.thisValues[0]).to.equal(component);
     });
   });
 
@@ -453,6 +476,25 @@ describe('Component', function() {
     });
   });
 
+  it('should support states from a bundle with arguments', function() {
+    var test = sinon.spy(function(value) {
+      return value;
+    });
+
+    tinto.test = {
+      states: {
+        test: test
+      }
+    };
+
+    component.__bundle__ = 'test';
+    component.state('test', [true]);
+
+    return component.is('test')().then(function(result) {
+      expect(result.outcome).to.be.true;
+    });
+  });
+
   it('should support properties from a bundle', function() {
     var test = sinon.spy(function() {
       return 'a value';
@@ -472,6 +514,25 @@ describe('Component', function() {
       expect(result.expected).to.equal('a value');
       expect(result.actual).to.equal('a value');
       expect(test.thisValues[0]).to.equal(component);
+    });
+  });
+
+  it('should support properties from a bundle with arguments', function() {
+    var test = sinon.spy(function(value) {
+      return value;
+    });
+
+    tinto.test = {
+      properties: {
+        test: test
+      }
+    };
+
+    component.__bundle__ = 'test';
+    component.property('test', ['a value']);
+
+    return component.has('test', 'a value')().then(function(result) {
+      expect(result.outcome).to.be.true;
     });
   });
 
