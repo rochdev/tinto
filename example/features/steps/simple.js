@@ -12,11 +12,11 @@ module.exports = tinto(function() {
     todoApp = TodoApp.from(tinto.page.find('#todoapp').first());
   });
 
-  this.When(/^I enter \"([^\"]*)\"$/, function(value) {
+  this.When(/^I enter "([^"]*)"$/, function(value) {
     todoApp.newTodo.enter(value, tinto.keyboard.ENTER);
   });
 
-  this.Then(/^I should see \"([^\"]*)\"$/, function(expected) {
+  this.Then(/^I should see "([^"]*)"$/, function(expected) {
     todoApp.todos.at(0).should.have.text(expected);
   });
 });
