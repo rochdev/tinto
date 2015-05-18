@@ -87,6 +87,8 @@ describe('ComponentCollection', function() {
 
       return components.each(callback).then(function() {
         expect(callback).to.have.been.calledTwice;
+        expect(callback.thisValues[0]).to.equal(1);
+        expect(callback.thisValues[1]).to.equal(2);
 
         expect(callback.firstCall.args[0]).to.be.instanceof(Component);
         expect(callback.firstCall.args[1]).to.equal(0);
@@ -108,6 +110,10 @@ describe('ComponentCollection', function() {
       callback.onSecondCall().returns(2);
 
       return components.map(callback).then(function(values) {
+        expect(callback).to.have.been.calledTwice;
+        expect(callback.thisValues[0]).to.equal(1);
+        expect(callback.thisValues[1]).to.equal(2);
+
         expect(values[0]).to.equal(1);
         expect(values[1]).to.equal(2);
       });
