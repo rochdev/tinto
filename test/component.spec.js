@@ -12,7 +12,6 @@ describe('Component', function() {
   var ComponentCollection;
   var PropertyAssertion;
   var StateAssertion;
-  var CountAssertion;
   var tinto;
   var queue;
   var extend;
@@ -25,7 +24,6 @@ describe('Component', function() {
 
   beforeEach(function() {
     ComponentCollection = sinon.spy();
-    CountAssertion = sinon.stub({register: function() {}});
     PropertyAssertion = sinon.stub({register: function() {}});
     StateAssertion = sinon.stub({register: function() {}});
 
@@ -64,7 +62,6 @@ describe('Component', function() {
     Component.__set__('ComponentCollection', ComponentCollection);
     Component.__set__('PropertyAssertion', PropertyAssertion);
     Component.__set__('StateAssertion', StateAssertion);
-    Component.__set__('CountAssertion', CountAssertion);
     Component.__set__('bundles', tinto);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
@@ -243,19 +240,6 @@ describe('Component', function() {
     expect(bar).to.have.property('configurable', true);
     expect(bar).to.have.property('enumerable', true);
     expect(component.baz).to.be.undefined;
-  });
-
-  it('should create count assertions from getters', function(done) {
-    component.getter('test', function() {});
-
-    descriptors.withArgs(component).returns({
-      test: Object.getOwnPropertyDescriptor(component, 'test')
-    });
-
-    setTimeout(function() {
-      expect(CountAssertion.register).to.have.been.calledWith('test');
-      done();
-    }, 0);
   });
 
   it('should store and execute a supported countable', function() {

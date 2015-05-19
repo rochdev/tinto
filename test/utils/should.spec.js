@@ -11,6 +11,8 @@ describe('should', function() {
   var context;
   var chai;
   var flag;
+  var descriptors;
+  var CountAssertion;
 
   beforeEach(function() {
     flag = sinon.stub();
@@ -23,11 +25,17 @@ describe('should', function() {
       this.__flags = 'flags';
     });
 
+    context = sinon.stub();
     mixin = sinon.spy();
+    descriptors = sinon.stub();
+
+    CountAssertion = sinon.stub({register: function() {}});
 
     should.__set__('chai', chai);
     should.__set__('flag', flag);
     should.__set__('mixin', mixin);
+    should.__set__('descriptors', descriptors);
+    should.__set__('CountAssertion', CountAssertion);
   });
 
   it('should contain registered assertions', function() {
@@ -52,6 +60,20 @@ describe('should', function() {
     expect(secondAssertion.firstCall.args[0]).to.equal(context);
   });
 
+  it('should create count assertions from getters', function() {
+    descriptors.withArgs(context).returns({
+      test: {
+        get: function() {
+          return 'test';
+        }
+      }
+    });
+
+    should.call(context);
+
+    expect(CountAssertion.register).to.have.been.calledWith('test');
+  });
+
   describe('eventually', function() {
     it('should contain registered assertions', function() {
       var accessor = should().eventually;
@@ -67,7 +89,7 @@ describe('should', function() {
       var firstAssertion = sinon.spy();
       var secondAssertion = sinon.spy();
 
-      should().eventually(firstAssertion, secondAssertion);
+      should.call(context).eventually(firstAssertion, secondAssertion);
 
       expect(firstAssertion).to.have.been.calledWithMatch();
       expect(firstAssertion.firstCall.args[0]).to.equal(context);
