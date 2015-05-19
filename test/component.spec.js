@@ -244,9 +244,13 @@ describe('Component', function() {
 
   it('should store and execute a supported countable', function() {
     var items = sinon.spy(function() {
-      return {
-        length: 2
+      var collection = function() {};
+
+      collection.count = function() {
+        return 2;
       };
+
+      return collection;
     });
 
     component.getter('items', items);

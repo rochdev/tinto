@@ -17,6 +17,6 @@ module.exports = tinto(function() {
   });
 
   this.Then(/^I should see "([^"]*)"$/, function(expected) {
-    todoApp.todos.at(0).should.have.text(expected);
+    todoApp.todos(0).should.have.text(expected);
   });
 });

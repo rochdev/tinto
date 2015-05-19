@@ -35,7 +35,7 @@ grid.should.have(3).rows;
 
 ##### Equality assertion
 ```js
-grid.rows.at(0).should.equal(firstRow);
+grid.rows(0).should.equal(firstRow);
 ```
 
 ##### Containing assertion

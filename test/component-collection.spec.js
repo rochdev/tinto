@@ -60,6 +60,17 @@ describe('ComponentCollection', function() {
       });
     });
 
+    it('should proxy index filtering', function() {
+      var component = components(0);
+
+      expect(Component).to.have.been.called;
+      expect(component).to.be.instanceof(Component);
+
+      return Component.args[0][0].then(function(element) {
+        expect(element).to.equal(1);
+      });
+    });
+
     it('should filter the first element', function() {
       components.first();
 
@@ -76,9 +87,9 @@ describe('ComponentCollection', function() {
       });
     });
 
-    it('should have a length', function() {
-      return components.length.then(function(length) {
-        expect(length).to.equal(2);
+    it('should have a count', function() {
+      return components.count().then(function(count) {
+        expect(count).to.equal(2);
       });
     });
 
