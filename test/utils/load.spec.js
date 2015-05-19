@@ -1,5 +1,6 @@
 'use strict';
 
+var sinon = require('sinon');
 var mockery = require('mockery');
 var expect = require('chai').expect;
 
@@ -44,5 +45,13 @@ describe('load', function() {
 
     expect(modules).to.have.property('foo', foo);
     expect(modules).to.have.property('bar', bar);
+  });
+
+  it('should skip folders that cannot be found', function() {
+    file.walkSync = sinon.stub().throws();
+
+    expect(function() {
+      load('hello', 'world');
+    }).not.to.throw();
   });
 });
