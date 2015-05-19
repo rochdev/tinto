@@ -83,7 +83,6 @@ describe('Assertions', function() {
     expect(chai.Assertion.addProperty).to.have.been.calledWith('eventually');
     expect(chai.Assertion.addProperty).to.have.been.calledWith('not');
     expect(chai.Assertion.addMethod).to.have.been.calledWith('equal');
-    expect(chai.Assertion.addMethod).to.have.been.calledWith('contain');
   });
 
   it('should register equal assertion', function() {
@@ -99,7 +98,7 @@ describe('Assertions', function() {
   });
 
   it('should register contain assertion', function() {
-    var contain = chai.Assertion.addMethod.withArgs('contain');
+    var contain = chai.Assertion.addChainableMethod.withArgs('contain');
     var assertContain = assert.withArgs('contain');
 
     assertions(chai, utils);
@@ -108,6 +107,7 @@ describe('Assertions', function() {
 
     expect(assertContain.firstCall.args[2]).to.equal('contain #{exp}');
     expect(assertable.contains).to.have.been.calledWith('value');
+    expect(contain.firstCall.args[2].call(context)).to.equal(context);
   });
 
   it('should chain default assertions', function() {
