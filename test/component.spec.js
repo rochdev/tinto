@@ -212,17 +212,25 @@ describe('Component', function() {
     expect(component.test).to.equal('world');
   });
 
-  it('should create getters from functions', function() {
+  it('should create getters from enumerable functions', function() {
     var props = {
       foo: function() {return 'foo';},
       get bar() {return 'bar';},
       baz: 'baz'
     };
 
+    Object.defineProperty(props, 'qux', {
+      get: function() {
+        return 'qux';
+      },
+      enumerable: false
+    });
+
     descriptors.withArgs(props).returns({
       foo: Object.getOwnPropertyDescriptor(props, 'foo'),
       bar: Object.getOwnPropertyDescriptor(props, 'bar'),
-      baz: Object.getOwnPropertyDescriptor(props, 'baz')
+      baz: Object.getOwnPropertyDescriptor(props, 'baz'),
+      qux: Object.getOwnPropertyDescriptor(props, 'qux')
     });
 
     component.getters(props);
@@ -240,6 +248,7 @@ describe('Component', function() {
     expect(bar).to.have.property('configurable', true);
     expect(bar).to.have.property('enumerable', true);
     expect(component.baz).to.be.undefined;
+    expect(component.qux).to.be.undefined;
   });
 
   it('should store and execute a supported countable', function() {
