@@ -9,6 +9,7 @@ var Browser = rewire('../lib/browser');
 
 describe('Browser', function() {
   var Page;
+  var AssertionResult;
   var browser;
   var webdriver;
   var builder;
@@ -24,7 +25,8 @@ describe('Browser', function() {
     driver = sinon.stub({
       get: function() {},
       close: function() {},
-      findElement: function() {}
+      findElement: function() {},
+      getCurrentUrl: function() {}
     });
 
     webdriver.Builder.returns(builder);
@@ -33,6 +35,7 @@ describe('Browser', function() {
     queue.process.returns(Q.resolve());
 
     Page = sinon.spy();
+    AssertionResult = require('../lib/assertion-result');
 
     Browser.__set__('webdriver', webdriver);
     Browser.__set__('queue', queue);
@@ -98,5 +101,29 @@ describe('Browser', function() {
     expect(page).to.be.instanceof(Page);
     expect(driver.findElement).to.have.been.calledWithMatch({css: 'html'});
     expect(Page).to.have.been.calledWith(element);
+  });
+
+  it('should get its URL', function() {
+    browser.open();
+    driver.getCurrentUrl.returns(Q.resolve('test.com'));
+
+    return expect(browser.url).to.eventually.equal('test.com');
+  });
+
+  it('should support URL assertion', function() {
+    browser.open();
+    driver.getCurrentUrl.returns(Q.resolve('test.com'));
+
+    var resultPromise = browser.has('url', 'test.com')();
+
+    return expect(resultPromise).to.eventually.be.instanceof(AssertionResult);
+  });
+
+  it('should throw when a property assertion is not supported', function() {
+    browser.open();
+
+    expect(function() {
+      browser.has('foo', 'bar')();
+    }).to.throw();
   });
 });
