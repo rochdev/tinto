@@ -4,18 +4,14 @@ var rewire = require('rewire');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var Q = require('q');
-var Attribute = require('../lib/attribute');
 var Component = rewire('../lib/component');
 var expect = require('chai').use(sinonChai).expect;
 
 describe('Component', function() {
   var ComponentCollection;
-  var PropertyAssertion;
-  var StateAssertion;
   var tinto;
   var queue;
   var extend;
-  var descriptors;
   var element;
   var promise;
   var component;
@@ -24,8 +20,6 @@ describe('Component', function() {
 
   beforeEach(function() {
     ComponentCollection = sinon.spy();
-    PropertyAssertion = sinon.stub({register: function() {}});
-    StateAssertion = sinon.stub({register: function() {}});
 
     tinto = {};
 
@@ -34,8 +28,6 @@ describe('Component', function() {
     });
 
     extend = sinon.spy(function() {return 'test';});
-
-    descriptors = sinon.stub();
 
     element = sinon.stub({
       findElements: function() {},
@@ -60,12 +52,9 @@ describe('Component', function() {
     promise = Q.resolve(element);
 
     Component.__set__('ComponentCollection', ComponentCollection);
-    Component.__set__('PropertyAssertion', PropertyAssertion);
-    Component.__set__('StateAssertion', StateAssertion);
     Component.__set__('bundles', tinto);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
-    Component.__set__('descriptors', descriptors);
     Component.__set__('uuid', uuid);
     Component.__set__('evaluator', evaluator);
 
@@ -202,55 +191,6 @@ describe('Component', function() {
     expect(test).to.be.instanceOf(Component);
   });
 
-  it('should create a getter', function() {
-    component.hello = 'world';
-    component.getter('test', function() {
-      return this.hello;
-    });
-
-    expect(component.test).to.be.defined;
-    expect(component.test).to.equal('world');
-  });
-
-  it('should create getters from enumerable functions', function() {
-    var props = {
-      foo: function() {return 'foo';},
-      get bar() {return 'bar';},
-      baz: 'baz'
-    };
-
-    Object.defineProperty(props, 'qux', {
-      get: function() {
-        return 'qux';
-      },
-      enumerable: false
-    });
-
-    descriptors.withArgs(props).returns({
-      foo: Object.getOwnPropertyDescriptor(props, 'foo'),
-      bar: Object.getOwnPropertyDescriptor(props, 'bar'),
-      baz: Object.getOwnPropertyDescriptor(props, 'baz'),
-      qux: Object.getOwnPropertyDescriptor(props, 'qux')
-    });
-
-    component.getters(props);
-
-    var foo = Object.getOwnPropertyDescriptor(component, 'foo');
-    var bar = Object.getOwnPropertyDescriptor(component, 'bar');
-
-    expect(descriptors).to.have.been.calledWith(props);
-    expect(component.foo).to.be.defined;
-    expect(component.foo).to.equal('foo');
-    expect(foo).to.have.property('configurable', true);
-    expect(foo).to.have.property('enumerable', true);
-    expect(component.bar).to.be.defined;
-    expect(component.bar).to.equal('bar');
-    expect(bar).to.have.property('configurable', true);
-    expect(bar).to.have.property('enumerable', true);
-    expect(component.baz).to.be.undefined;
-    expect(component.qux).to.be.undefined;
-  });
-
   it('should store and execute a supported countable', function() {
     var items = sinon.spy(function() {
       var collection = function() {};
@@ -323,94 +263,6 @@ describe('Component', function() {
     return component.has('test', 'foo')().then(function(result) {
       expect(result.outcome).to.be.true;
     });
-  });
-
-  it('should store a supported property as an attribute', function() {
-    var test = sinon.spy(function() {
-      return 'a value';
-    });
-
-    component.property('test', test);
-
-    expect(component.test).to.be.instanceof(Attribute);
-
-    return component.test.value.then(function(result) {
-      expect(result).to.equal('a value');
-    });
-  });
-
-  it('should store and execute supported states as object', function() {
-    component.states({
-      first: function() {
-        return true;
-      },
-      second: function() {
-        return false;
-      }
-    });
-
-    var isFirst = component.is('first')();
-    var isSecond = component.is('second')();
-
-    return Q.all([isFirst, isSecond]).then(function(results) {
-      expect(results[0].outcome).to.be.true;
-      expect(results[1].outcome).to.be.false;
-    });
-  });
-
-  it('should store and execute supported states as string', function() {
-    tinto.test = {
-      states: {
-        first: function() {},
-        second: function() {}
-      }
-    };
-
-    component.__bundle__ = 'test';
-    component.states('first', 'second');
-
-    expect(StateAssertion.register).to.have.been.calledWith('first');
-    expect(StateAssertion.register).to.have.been.calledWith('second');
-    expect(component.first).to.be.defined;
-    expect(component.second).to.be.defined;
-  });
-
-  it('should store and execute supported properties as object', function() {
-    component.properties({
-      first: function() {
-        return 'first value';
-      },
-      second: function() {
-        return 'second value';
-      }
-    });
-
-    var hasFirst = component.has('first', 'first value')();
-    var hasSecond = component.has('second', 'second value')();
-
-    return Q.all([hasFirst, hasSecond]).then(function(results) {
-      expect(results[0].outcome).to.be.true;
-      expect(results[0].expected).to.equal('first value');
-      expect(results[0].actual).to.equal('first value');
-      expect(results[1].outcome).to.be.true;
-      expect(results[1].expected).to.equal('second value');
-      expect(results[1].actual).to.equal('second value');
-    });
-  });
-
-  it('should store and execute supported properties as string', function() {
-    tinto.test = {
-      properties: {
-        first: function() {},
-        second: function() {}
-      }
-    };
-
-    component.__bundle__ = 'test';
-    component.properties('first', 'second');
-
-    expect(PropertyAssertion.register).to.have.been.calledWith('first');
-    expect(PropertyAssertion.register).to.have.been.calledWith('second');
   });
 
   it('should support html states', function() {
@@ -579,42 +431,6 @@ describe('Component', function() {
     expect(function() {
       component.property('test');
     }).to.throw('Property "test" does not exist');
-  });
-
-  it('should throw an error when trying to use a state that does not exist', function() {
-    expect(function() {
-      component.is('test')();
-    }).to.throw('Unsupported state "test"');
-  });
-
-  it('should throw an error when trying to use a property that does not exist', function() {
-    expect(function() {
-      component.has('test', 'first value')();
-    }).to.throw('Unsupported property "test"');
-  });
-
-  it('should throw an error when trying to use a countable that is not a collection', function() {
-    var items = sinon.spy(function() {
-      return {};
-    });
-
-    component.getter('items', items);
-
-    expect(function() {
-      component.has(2, 'items')();
-    }).to.throw('Count assertions can only be applied to collections');
-  });
-
-  it('should register assertions for its properties', function() {
-    component.property('test', function() {});
-
-    expect(PropertyAssertion.register).to.have.been.calledWith('test');
-  });
-
-  it('should register assertions for its states', function() {
-    component.state('test', function() {});
-
-    expect(StateAssertion.register).to.have.been.calledWith('test');
   });
 
   it('should be available when the element can be found', function() {
