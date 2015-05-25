@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "./bin/tinto",
   "scripts": {
-    "test": "./node_modules/.bin/jshint lib test && ./node_modules/.bin/jscs lib test && ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --recursive lib test"
+    "test": "./node_modules/.bin/jshint lib test --reporter=node_modules/jshint-stylish && ./node_modules/.bin/jscs lib test && ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --recursive lib test"
   },
   "author": "Roch Devost",
   "contributors": [],
@@ -27,7 +27,7 @@
     "istanbul": "^0.3.8",
     "jscs": "^1.11.3",
     "jshint": "^2.6.3",
-    "jshint-stylish": "^1.0.0",
+    "jshint-stylish": "^2.0.0",
     "mocha": "^2.2.1",
     "mockery": "^1.4.0",
     "rewire": "^2.3.1",
