@@ -83,7 +83,7 @@ describe('Browser', function() {
 
     return browser.close().then(function() {
       expect(queue.process).to.have.been.called;
-      expect(driver.close).to.have.been.called;
+      expect(driver.close).to.have.been.calledOn(driver);
     });
   });
 
