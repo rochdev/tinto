@@ -14,9 +14,10 @@ describe('Component', function() {
   var extend;
   var element;
   var promise;
+  var locator;
   var component;
   var evaluator;
-  var uuid;
+  var driver;
 
   beforeEach(function() {
     ComponentCollection = sinon.spy();
@@ -37,88 +38,80 @@ describe('Component', function() {
       sendKeys: function() {}
     });
 
-    uuid = sinon.stub({
-      v4: function() {}
-    });
-    uuid.v4.returns('uuid');
+    driver = {
+      wait: sinon.spy(function(until) {
+        return until();
+      })
+    };
 
     evaluator = sinon.stub({
       execute: function() {},
-      find: function() {}
+      find: function() {},
+      getDriver: function() {}
     });
     evaluator.execute.returns(Q.resolve('uuid'));
     evaluator.find.returns(Q.resolve('component'));
+    evaluator.getDriver.returns(driver);
 
     promise = Q.resolve(element);
+
+    locator = {
+      locate: sinon.stub().returns(promise)
+    };
 
     Component.__set__('ComponentCollection', ComponentCollection);
     Component.__set__('bundles', tinto);
     Component.__set__('queue', queue);
     Component.__set__('extend', extend);
-    Component.__set__('uuid', uuid);
     Component.__set__('evaluator', evaluator);
 
-    component = new Component(promise);
+    component = new Component(locator);
   });
 
   it('should have a unique string identifier', function() {
-    promise.then(function() {
-      var name = component.toString();
+    locator.id = 'uuid';
 
-      expect(name).to.equal('[Component:uuid]');
-    });
+    var name = component.toString();
+
+    expect(name).to.equal('[Component:uuid]');
   });
 
-  it('should mark the DOM element with its identifier', function() {
-    var context = sinon.stub({
-      getAttribute: function() {},
-      setAttribute: function() {}
-    });
+  it('should have a string representation without an identifier', function() {
+    locator.parent = {
+      toString: function() {return '[Parent]';}
+    };
+    locator.selector = '#test';
+    locator.index = 0;
 
-    expect(evaluator.execute).to.have.been.called;
+    var name = component.toString();
 
-    evaluator.execute.firstCall.args[1].call(context, 'uuid');
-
-    expect(context.setAttribute).to.have.been.calledWithMatch('data-tinto-id', 'uuid');
-  });
-
-  it('should get its unique identifier from the DOM if already set', function() {
-    var context = sinon.stub({
-      getAttribute: function() {},
-      setAttribute: function() {}
-    });
-
-    context.getAttribute.returns('expected');
-
-    var identifier = evaluator.execute.firstCall.args[1].call(context, 'uuid');
-
-    expect(identifier).to.equal('expected');
+    expect(name).to.equal('an element matching selector "#test" under [Parent] at index 0');
   });
 
   it('should be able to find sub-components', function() {
     var subComponents = component.find('#test');
 
     expect(subComponents).to.be.instanceOf(ComponentCollection);
-
-    return ComponentCollection.firstCall.args[1].then(function() {
-      expect(evaluator.find).to.have.been.calledWith(component._element, '#test');
-    });
+    expect(ComponentCollection.firstCall.args[1]).to.have.property('parent', component);
+    expect(ComponentCollection.firstCall.args[1]).to.have.property('selector', '#test');
   });
 
   it('should be able to cast itself to another component type', function() {
     var Test = sinon.spy();
     var test = component.as(Test);
 
-    expect(Test).to.have.been.calledWith(component._element);
+    expect(Test).to.have.been.calledWith(locator);
     expect(test).to.be.instanceof(Test);
   });
 
   it('should get its element', function() {
-    var result = component.getElement();
+    return expect(component.getElement()).to.eventually.equal(element);
+  });
 
-    return Q.all([promise, result]).then(function(results) {
-      expect(results[0]).to.equal(results[1]);
-    });
+  it('should throw when it could not get its element', function() {
+    locator.locate.returns(Q.reject());
+
+    return expect(component.getElement()).to.eventually.be.rejected;
   });
 
   it('should get its attributes', function() {
@@ -168,7 +161,14 @@ describe('Component', function() {
     var callback = function() {};
 
     return component.execute(callback, 1, 2).then(function() {
-      expect(evaluator.execute).to.have.been.calledWith(component._element, callback, 1, 2);
+      expect(evaluator.execute).to.have.been.called;
+      expect(evaluator.execute.firstCall.args[1]).to.equal(callback);
+      expect(evaluator.execute.firstCall.args[2]).to.equal(1);
+      expect(evaluator.execute.firstCall.args[3]).to.equal(2);
+
+      return evaluator.execute.firstCall.args[0].then(function(response) {
+        expect(response).to.equal(element);
+      });
     });
   });
 
@@ -187,7 +187,7 @@ describe('Component', function() {
     var Test = sinon.spy(Component);
     var test = Test.from(component);
 
-    expect(Test).to.have.been.calledWith(component._element);
+    expect(Test).to.have.been.calledWith(locator);
     expect(test).to.be.instanceOf(Component);
   });
 
@@ -389,13 +389,15 @@ describe('Component', function() {
     var context = sinon.stub({
       contains: function() {}
     });
-    var child = new Component(Q.resolve());
+    var child = new Component(locator);
 
     context.contains.returns(Q.resolve(true));
 
     evaluator.execute = function(element, callback) {
       return Q.resolve(callback.apply(context));
     };
+
+    locator.id = 'uuid';
 
     return component.contains(child)().then(function(results) {
       expect(results[0].outcome).to.be.true;
@@ -404,11 +406,13 @@ describe('Component', function() {
   });
 
   it('should support equals', function() {
-    var clone = new Component(Q.resolve(element));
+    var clone = new Component(locator);
 
     evaluator.execute = function(context, callback) {
       return Q.resolve(callback.call(element, element));
     };
+
+    locator.id = 'uuid';
 
     return component.equals(clone)().then(function(result) {
       expect(result.outcome).to.be.true;
@@ -438,17 +442,17 @@ describe('Component', function() {
   });
 
   it('should be missing when the element cannot be found', function() {
-    promise = Q.reject();
+    locator.locate.returns(Q.resolve());
 
-    component = new Component(promise);
+    component = new Component(locator);
 
     return expect(component.is('missing')()).to.eventually.have.property('outcome', true);
   });
 
   it('should not be available when the element cannot be found', function() {
-    promise = Q.reject();
+    locator.locate.returns(Q.resolve());
 
-    component = new Component(promise);
+    component = new Component(locator);
 
     return expect(component.is('available')()).to.eventually.have.property('outcome', false);
   });

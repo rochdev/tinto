@@ -11,7 +11,10 @@ describe('evaluator', function() {
   var element;
   var promise;
   var driver;
-  var ElementNotFoundError;
+  var forBrowser;
+  var builder;
+  var webdriver;
+  var queue;
 
   beforeEach(function() {
     mockery.enable({
@@ -19,27 +22,74 @@ describe('evaluator', function() {
       warnOnUnregistered: false
     });
 
+    queue = sinon.stub({process: function() {}, push: function() {}});
+    webdriver = sinon.stub({Builder: function() {}});
+    builder = sinon.stub({forBrowser: function() {}});
+    forBrowser = sinon.stub({build: function() {}});
+    driver = sinon.stub({
+      get: function() {},
+      close: function() {},
+      executeScript: function() {},
+      findElements: function() {},
+      getCurrentUrl: function() {}
+    });
+
+    webdriver.Builder.returns(builder);
+    builder.forBrowser.returns(forBrowser);
+    forBrowser.build.returns(driver);
+    queue.process.returns(Q.resolve());
+
     element = sinon.stub({
       getDriver: function() {},
-      findElements: function() {},
       getAttribute: function() {}
     });
 
+    element.getDriver.returns(driver);
+
     promise = Q.resolve(element);
 
-    ElementNotFoundError = require('../../lib/errors/element-not-found-error');
+    mockery.registerMock('selenium-webdriver', webdriver);
+
     evaluator = require('../../lib/utils/evaluator');
-
-    driver = sinon.stub({
-      executeScript: function() {}
-    });
-
-    element.getDriver.returns(driver);
   });
 
   afterEach(function() {
     mockery.deregisterAll();
     mockery.disable();
+  });
+
+  it('should open the driver', function() {
+    evaluator.open();
+
+    expect(forBrowser.build).to.have.been.called;
+  });
+
+  it('should return the driver', function() {
+    evaluator.open();
+
+    expect(evaluator.getDriver()).to.equal(driver);
+  });
+
+  it('should only open the driver if not already opened', function() {
+    evaluator.open();
+    evaluator.open();
+
+    expect(forBrowser.build).to.have.been.calledOnce;
+  });
+
+  it('should close the driver', function() {
+    evaluator.open();
+    driver.close.returns(Q.resolve());
+
+    return evaluator.close().then(function() {
+      expect(driver.close).to.have.been.calledOn(driver);
+    });
+  });
+
+  it('should do nothing when trying to close an unopened driver', function(done) {
+    expect(function() {
+      evaluator.close().then(done).done();
+    }).not.to.throw();
   });
 
   it('should execute a script on the client', function() {
@@ -57,45 +107,11 @@ describe('evaluator', function() {
     return evaluated;
   });
 
-  it('should be able to find descendants by locator function', function() {
-    // TODO: refactor not to test implementation
-    var locator = function() {};
-
-    evaluator.execute = sinon.stub();
-    evaluator.execute.returns('elements');
-
-    var elements = evaluator.find(promise, locator);
-
-    expect(evaluator.execute).to.have.been.calledWith(promise, locator);
-    expect(elements).to.equal('elements');
-  });
-
   it('should be able to find descendants by selector string', function() {
-    element.findElements.withArgs(sinon.match({css: '#test'})).returns('elements');
-    element.getAttribute.withArgs('data-tinto-id').returns(Q.resolve('uuid'));
+    driver.findElements.withArgs(sinon.match({css: '#test'})).returns('elements');
 
-    return evaluator.find(promise, '#test').then(function(elements) {
-      expect(elements).to.equal('elements');
-    });
-  });
+    evaluator.open();
 
-  it('should polyfill the :scope selector', function() {
-    element.getAttribute.withArgs('data-tinto-id').returns(Q.resolve('uuid'));
-
-    return evaluator.find(promise, ':scope > test').then(function() {
-      expect(element.findElements).to.have.been.calledWithMatch({css: '[data-tinto-id="uuid"] > test'});
-    });
-  });
-
-  it('should throw an error when executing on a missing element', function() {
-    promise = Q.resolve();
-
-    return expect(evaluator.execute(promise)).to.eventually.be.rejectedWith(ElementNotFoundError);
-  });
-
-  it('should throw an error when finding on a missing element', function() {
-    promise = Q.resolve();
-
-    return expect(evaluator.find(promise, 'missing')).to.eventually.be.rejectedWith(ElementNotFoundError);
+    return expect(evaluator.find('#test')).to.equal('elements');
   });
 });

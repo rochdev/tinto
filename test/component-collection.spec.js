@@ -41,12 +41,18 @@ describe('ComponentCollection', function() {
   });
 
   describe('given the elements [1, 2]', function() {
+    var locator;
     var promise;
     var components;
 
     beforeEach(function() {
       promise = Q.resolve([1, 2]);
-      components = new ComponentCollection(Component, promise);
+      locator = {
+        parent: 'parent',
+        selector: 'selector',
+        locate: sinon.stub().returns(promise)
+      };
+      components = new ComponentCollection(Component, locator);
     });
 
     it('should filter a component by index', function() {
@@ -55,9 +61,7 @@ describe('ComponentCollection', function() {
       expect(Component).to.have.been.called;
       expect(component).to.be.instanceof(Component);
 
-      return Component.args[0][0].then(function(element) {
-        expect(element).to.equal(1);
-      });
+      assertLocator(Component, 0);
     });
 
     it('should proxy index filtering', function() {
@@ -66,25 +70,19 @@ describe('ComponentCollection', function() {
       expect(Component).to.have.been.called;
       expect(component).to.be.instanceof(Component);
 
-      return Component.args[0][0].then(function(element) {
-        expect(element).to.equal(1);
-      });
+      assertLocator(Component, 0);
     });
 
     it('should filter the first element', function() {
       components.first();
 
-      return Q.all(Component.args[0][0]).then(function(value) {
-        expect(value).to.equal(1);
-      });
+      assertLocator(Component, 0);
     });
 
     it('should filter the last element', function() {
       components.last();
 
-      return Q.all(Component.args[0][0]).then(function(value) {
-        expect(value).to.equal(2);
-      });
+      assertLocator(Component, -1);
     });
 
     it('should have a count', function() {
@@ -138,9 +136,7 @@ describe('ComponentCollection', function() {
       expect(Test).to.have.been.called;
       expect(test).to.be.instanceof(Test);
 
-      return Test.args[0][0].then(function(element) {
-        expect(element).to.equal(1);
-      });
+      assertLocator(Test, 0);
     });
 
     it('should be able to cast itself to a collection of another component type', function() {
@@ -151,9 +147,7 @@ describe('ComponentCollection', function() {
       expect(Test).to.have.been.called;
       expect(test).to.be.instanceof(Test);
 
-      return Test.args[0][0].then(function(element) {
-        expect(element).to.equal(1);
-      });
+      assertLocator(Test, 0);
     });
 
     it('should get its elements', function() {
@@ -164,5 +158,11 @@ describe('ComponentCollection', function() {
         expect(results[0][1]).to.equal(results[1][1]);
       });
     });
+
+    function assertLocator(spy, index) {
+      expect(spy.args[0][0]).to.have.property('parent', locator.parent);
+      expect(spy.args[0][0]).to.have.property('selector', locator.selector);
+      expect(spy.args[0][0]).to.have.property('index', index);
+    }
   });
 });
