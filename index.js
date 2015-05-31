@@ -9,6 +9,7 @@ var PropertyAssertion = require('./lib/assertions/property-assertion');
 var StateAssertion = require('./lib/assertions/state-assertion');
 var tinto = require('./lib/tinto');
 var bundle = require('./lib/utils/bundle');
+var config = require('./lib/utils/config');
 var html = require('./lib/html');
 
 module.exports = tinto;
@@ -42,3 +43,6 @@ chai.use(require('./lib/assertions'));
 
 // Default bundle
 bundle('html', html);
+
+// Load user config
+config.load();
