@@ -150,6 +150,16 @@ describe('ComponentCollection', function() {
       assertLocator(Test, 0);
     });
 
+    it('should be able to cast its first element', function() {
+      var Test = sinon.spy();
+
+      Component.prototype.as = sinon.stub().withArgs(Test).returns('test');
+
+      var test = components.as(Test);
+
+      expect(test).to.equal('test');
+    });
+
     it('should get its elements', function() {
       var elements = components.getElements();
 
