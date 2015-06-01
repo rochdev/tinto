@@ -49,7 +49,7 @@ module.exports = function() {
     var doc = asset('docblock.js').trim();
     var template = asset('component.' + answers.syntax + '.js')
       .replace(/\$doc\$/g, doc)
-      .replace(/\$class\$/g, answers.name)
+      .replace(/\$class\$/g, _.capitalize(_.camelCase(answers.name)))
       .replace(/\$super\$/g, answers.super)
       .replace(/\$memberof\$/g, answers.bundle ? '\n * @memberOf tinto.' + answers.bundle + '.components' : '');
     var filename = _.kebabCase(answers.name) + '.js';
