@@ -15,6 +15,7 @@ var html = require('./lib/html');
 module.exports = tinto;
 
 module.exports.Component = require('./lib/component');
+module.exports.Page = require('./lib/page');
 module.exports.ComponentCollection = require('./lib/component-collection');
 module.exports.Browser = require('./lib/browser');
 
