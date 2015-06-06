@@ -38,6 +38,6 @@ describe('HTML: Button component', function() {
   });
 
   it('should have property text', function() {
-    expect(Component.prototype.property).to.have.been.calledWith('title');
+    expect(Component.prototype.property).to.have.been.calledWith('label');
   });
 });

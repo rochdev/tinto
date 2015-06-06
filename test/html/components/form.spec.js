@@ -7,6 +7,7 @@ var expect = require('chai').use(sinonChai).expect;
 
 describe('HTML: Form component', function() {
   var Form;
+  var Button;
   var Component;
   var form;
 
@@ -18,12 +19,16 @@ describe('HTML: Form component', function() {
 
     Component = sinon.spy();
     Component.prototype = sinon.stub({
+      find: function() {},
       property: function() {}
     });
 
-    mockery.registerMock('../../component', Component);
+    Button = sinon.spy();
 
-    Form = require('../../../lib/html/components/button');
+    mockery.registerMock('../../component', Component);
+    mockery.registerMock('./button', Button);
+
+    Form = require('../../../lib/html/components/form');
 
     form = new Form();
   });
@@ -37,4 +42,15 @@ describe('HTML: Form component', function() {
     expect(form).to.be.instanceof(Component);
   });
 
+  it('should submit', function() {
+    var button = sinon.stub({click: function() {}});
+    var component = sinon.stub({as: function() {}});
+
+    component.as.withArgs(Button).returns(button);
+    Component.prototype.find.withArgs('[type=submit]').returns(component);
+
+    form.submit();
+
+    expect(button.click).to.have.been.called;
+  });
 });
