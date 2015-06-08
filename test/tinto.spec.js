@@ -117,13 +117,10 @@ describe('tinto', function() {
   function assert(method) {
     expect(method).to.have.been.calledWith('foo', 'bar');
 
-    method.firstCall.args[2](callback);
+    var stepPromise = method.firstCall.args[2]();
 
     expect(step).to.have.been.called;
     expect(queue.process).to.have.been.called;
-
-    return promise.then(function() {
-      expect(callback).to.have.been.calledWithExactly();
-    });
+    expect(stepPromise).to.equal(promise);
   }
 });
