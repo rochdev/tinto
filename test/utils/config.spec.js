@@ -78,13 +78,28 @@ describe('config', function() {
       expect(bundle).to.have.been.calledWith('foo', foo);
     });
 
-    it('should load bundles by string', function() {
+    it('should load bundles by name', function() {
       var foo = {};
 
       mockery.registerMock(path.join(process.cwd(), 'node_modules', 'foo'), foo);
       mockery.registerMock(path.join(process.cwd(), 'tinto.conf.js'), {
         bundles: {
           foo: 'foo'
+        }
+      });
+
+      config.load();
+
+      expect(bundle).to.have.been.calledWith('foo', foo);
+    });
+
+    it('should load bundles by path', function() {
+      var foo = {};
+
+      mockery.registerMock(path.join(process.cwd(), './foo'), foo);
+      mockery.registerMock(path.join(process.cwd(), 'tinto.conf.js'), {
+        bundles: {
+          foo: './foo'
         }
       });
 
