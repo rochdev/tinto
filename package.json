@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "chai": "^3.0.0",
+    "chalk": "^1.0.0",
     "commander": "^2.7.1",
     "cucumber": "^0.5.0",
     "file": "^0.2.2",

@@ -22,6 +22,7 @@ module.exports.Browser = require('./lib/browser');
 var browser = new module.exports.Browser();
 
 module.exports.browser = browser;
+module.exports.pause = require('./lib/utils/pause');
 module.exports.inherits = require('./lib/utils/inherits');
 module.exports.bundle = bundle;
 module.exports.keyboard = require('./lib/utils/keyboard');
