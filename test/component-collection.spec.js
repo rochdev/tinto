@@ -105,10 +105,13 @@ describe('ComponentCollection', function() {
         expect(callback.secondCall.args[0]).to.be.instanceof(Component);
         expect(callback.secondCall.args[1]).to.equal(1);
 
-        return Q.all([
-          expect(Component.firstCall.args[0]).to.eventually.equal(1),
-          expect(Component.secondCall.args[0]).to.eventually.equal(2)
-        ]);
+        expect(Component.firstCall.args[0]).to.have.property('parent', locator.parent);
+        expect(Component.firstCall.args[0]).to.have.property('selector', locator.selector);
+        expect(Component.firstCall.args[0]).to.have.property('index', 0);
+
+        expect(Component.secondCall.args[0]).to.have.property('parent', locator.parent);
+        expect(Component.secondCall.args[0]).to.have.property('selector', locator.selector);
+        expect(Component.secondCall.args[0]).to.have.property('index', 1);
       });
     });
 
@@ -122,6 +125,14 @@ describe('ComponentCollection', function() {
         expect(callback).to.have.been.calledTwice;
         expect(callback.thisValues[0]).to.equal(1);
         expect(callback.thisValues[1]).to.equal(2);
+
+        expect(Component.firstCall.args[0]).to.have.property('parent', locator.parent);
+        expect(Component.firstCall.args[0]).to.have.property('selector', locator.selector);
+        expect(Component.firstCall.args[0]).to.have.property('index', 0);
+
+        expect(Component.secondCall.args[0]).to.have.property('parent', locator.parent);
+        expect(Component.secondCall.args[0]).to.have.property('selector', locator.selector);
+        expect(Component.secondCall.args[0]).to.have.property('index', 1);
 
         expect(values[0]).to.equal(1);
         expect(values[1]).to.equal(2);
