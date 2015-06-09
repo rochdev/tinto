@@ -54,14 +54,19 @@ describe('Browser', function() {
   it('should open the evaluator and visit the URL', function() {
     browser.open('test.com');
 
+    queue.push.firstCall.args[0]();
+
     expect(evaluator.open).to.have.been.called;
     expect(driver.get).to.have.been.calledWith('test.com');
   });
 
   it('should add opening the evaluator to the queue', function() {
-    var promise = browser.open('test.com');
+    driver.get.withArgs('test.com').returns('test');
 
-    expect(queue.push).to.have.been.calledWith(promise);
+    browser.open('test.com');
+
+    expect(queue.push).to.have.been.called;
+    expect(queue.push.firstCall.args[0]()).to.equal('test');
   });
 
   it('should close the evaluator', function() {
