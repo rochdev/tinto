@@ -1,7 +1,5 @@
 'use strict';
 
-var tinto = require('tinto');
-
 /** @namespace tinto.$name$ */
 module.exports = {
   /** @namespace tinto.$name$.components */

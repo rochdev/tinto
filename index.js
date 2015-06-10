@@ -13,6 +13,7 @@ var config = require('./lib/utils/config');
 var html = require('./lib/html');
 
 module.exports = tinto;
+global.tinto = tinto;
 
 module.exports.Component = require('./lib/component');
 module.exports.Page = require('./lib/page');
