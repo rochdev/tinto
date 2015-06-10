@@ -9,6 +9,7 @@ var expect = require('chai').use(sinonChai).expect;
 describe('config', function() {
   var config;
   var fs;
+  var chai;
   var bundle;
 
   beforeEach(function() {
@@ -22,9 +23,12 @@ describe('config', function() {
       statSync: sinon.stub()
     };
 
+    chai = {config: {}};
+
     bundle = sinon.stub();
 
     mockery.registerMock('fs', fs);
+    mockery.registerMock('chai', chai);
     mockery.registerMock('./bundle', bundle);
   });
 
@@ -62,6 +66,16 @@ describe('config', function() {
       var foo = config.get('foo');
 
       expect(foo).to.equal('bar');
+    });
+
+    it('should include stack trace if includeStack option is true', function() {
+      mockery.registerMock(path.join(process.cwd(), 'tinto.conf.js'), {
+        includeStack: true
+      });
+
+      config.load();
+
+      expect(chai.config.includeStack).to.be.true;
     });
 
     it('should load bundles by object', function() {
