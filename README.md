@@ -102,6 +102,24 @@ var Grid = Component.extend({
 });
 ```
 
+### Configuration
+
+Tinto is configured from a file `tinto.conf.js` that should be placed in your project root. It should export the configuration object directly.
+
+#### Options
+
+* **includeStack**: whether or not to include a stack trace in assertion error messages
+* **bundles**: an array of bundle names or bundle instances to load
+
+#### Defaults
+
+```js
+module.exports = {
+  includeStack: false,
+  bundles: []
+};
+```
+
 ### Command-line interface
 
 In order to use the CLI, you must install tinto globally. You can then run `tinto --help` to list available commands.
