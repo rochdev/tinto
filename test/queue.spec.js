@@ -2,8 +2,9 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
+var chaiAsPromised = require('chai-as-promised');
 var Q = require('q');
-var expect = require('chai').use(sinonChai).expect;
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 var mockery = require('mockery');
 
 describe('Queue', function() {
