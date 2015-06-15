@@ -18,7 +18,8 @@ describe('Browser', function() {
   beforeEach(function() {
     driver = sinon.stub({
       get: function() {},
-      getCurrentUrl: function() {}
+      getCurrentUrl: function() {},
+      navigate: function() {}
     });
 
     queue = sinon.stub({process: function() {}, push: function() {}, clear: function() {}});
@@ -51,6 +52,12 @@ describe('Browser', function() {
     expect(browser).to.be.instanceof(Entity);
   });
 
+  it('should open the evaluator', function() {
+    browser.open();
+
+    expect(evaluator.open).to.have.been.called;
+  });
+
   it('should open the evaluator and visit the URL', function() {
     browser.open('test.com');
 
@@ -60,13 +67,24 @@ describe('Browser', function() {
     expect(driver.get).to.have.been.calledWith('test.com');
   });
 
-  it('should add opening the evaluator to the queue', function() {
+  it('should visit the URL', function() {
     driver.get.withArgs('test.com').returns('test');
 
-    browser.open('test.com');
+    browser.open();
+    browser.visit('test.com');
 
-    expect(queue.push).to.have.been.called;
-    expect(queue.push.firstCall.args[0]()).to.equal('test');
+    var result = queue.push.firstCall.args[0]();
+
+    expect(driver.get).to.have.been.calledWith('test.com');
+    expect(result).to.equal('test');
+  });
+
+  it('should navigate', function() {
+    driver.navigate.returns('test');
+
+    browser.open();
+
+    expect(browser.navigate).to.equal('test');
   });
 
   it('should close the evaluator', function() {
