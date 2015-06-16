@@ -109,4 +109,32 @@ describe('Locator', function() {
       expect(context.setAttribute).to.have.been.calledWithMatch('data-tinto-id', 'uuid');
     });
   });
+
+  it('should include the selector in its message', function() {
+    locator = new Locator(null, '#test');
+
+    expect(locator.getMessage()).to.equal(
+      'an element matching selector "#test"'
+    );
+  });
+
+  it('should include the parent in its message', function() {
+    locator = new Locator({
+      toString: function() {
+        return 'parent';
+      }
+    }, '#test');
+
+    expect(locator.getMessage()).to.equal(
+      'an element matching selector "#test" under parent'
+    );
+  });
+
+  it('should include the index in its message', function() {
+    locator = new Locator(null, '#test', 1);
+
+    expect(locator.getMessage()).to.equal(
+      'an element matching selector "#test" at index 1'
+    );
+  });
 });

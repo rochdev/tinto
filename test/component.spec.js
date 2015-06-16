@@ -56,7 +56,8 @@ describe('Component', function() {
     promise = Q.resolve(element);
 
     locator = {
-      locate: sinon.stub().returns(promise)
+      locate: sinon.stub().returns(promise),
+      getMessage: sinon.stub().returns('test')
     };
 
     Component.__set__('ComponentCollection', ComponentCollection);
@@ -77,15 +78,7 @@ describe('Component', function() {
   });
 
   it('should have a string representation without an identifier', function() {
-    locator.parent = {
-      toString: function() {return '[Parent]';}
-    };
-    locator.selector = '#test';
-    locator.index = 0;
-
-    var name = component.toString();
-
-    expect(name).to.equal('an element matching selector "#test" under [Parent] at index 0');
+    expect(component.toString()).to.equal('test');
   });
 
   it('should be able to find sub-components', function() {

@@ -1,5 +1,6 @@
 'use strict';
 
+var sinon = require('sinon');
 var expect = require('chai').expect;
 
 describe('', function() {
@@ -9,12 +10,7 @@ describe('', function() {
   beforeEach(function() {
     ElementNotFoundError = require('../../lib/errors/element-not-found-error');
     locator = {
-      parent: {
-        toString: function() {
-          return 'parent';
-        }
-      },
-      selector: '#test'
+      getMessage: sinon.stub().returns('test')
     };
   });
 
@@ -25,18 +21,8 @@ describe('', function() {
   });
 
   it('should have the right error message', function() {
-    locator.index = 1;
-
     var error = new ElementNotFoundError(locator);
 
-    expect(error).to.have.property('message',
-      'No element matching selector "#test" could be found under parent at index 1');
-  });
-
-  it('should have default index of 0', function() {
-    var error = new ElementNotFoundError(locator);
-
-    expect(error).to.have.property('message',
-      'No element matching selector "#test" could be found under parent at index 0');
+    expect(error).to.have.property('message', 'test could not be found');
   });
 });
