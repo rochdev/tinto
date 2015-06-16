@@ -14,6 +14,7 @@ describe('Browser', function() {
   var driver;
   var evaluator;
   var queue;
+  var find;
 
   beforeEach(function() {
     driver = sinon.stub({
@@ -36,10 +37,17 @@ describe('Browser', function() {
     Entity = require('../lib/entity');
     sinon.spy(Entity.prototype, 'property');
 
+    find = sinon.stub().withArgs('title').returns({
+      first: sinon.stub().returns({
+        getText: sinon.stub().returns('test')
+      })
+    });
+
     Browser.__set__('Entity', Entity);
     Browser.__set__('evaluator', evaluator);
     Browser.__set__('queue', queue);
     Browser.__set__('Page', Page);
+    Browser.__set__('find', find);
 
     browser = new Browser();
   });
@@ -129,5 +137,9 @@ describe('Browser', function() {
     driver.getCurrentUrl.returns(Q.resolve('test.com'));
 
     return expect(browser.url.value).to.eventually.equal('test.com');
+  });
+
+  it('should have title property', function() {
+    expect(browser.title.value).to.equal('test');
   });
 });
