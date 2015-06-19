@@ -79,6 +79,20 @@ describe('wait', function() {
     }, 0);
   });
 
+  it('should wait for the assertion to finish even if the total time has elapsed', function() {
+    var deferred = Q.defer();
+
+    runnable.returns(deferred.promise);
+
+    setTimeout(function() {
+      deferred.resolve({outcome: false});
+    }, 1);
+
+    return wait.for(0).every(0).until(runnable, false).then(function(results) {
+      expect(results).to.exist;
+    });
+  });
+
   it('should support multiple results', function() {
     runnable.returns(Q.resolve([
       {outcome: true},
