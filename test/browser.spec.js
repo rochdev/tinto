@@ -127,7 +127,7 @@ describe('Browser', function() {
 
     expect(page).to.be.instanceof(Page);
     expect(Page).to.have.been.called;
-    expect(Page.firstCall.args[0]).to.have.property('parent', null);
+    expect(Page.firstCall.args[0]).to.have.property('parent', undefined);
     expect(Page.firstCall.args[0]).to.have.property('selector', 'html');
     expect(Page.firstCall.args[0]).to.have.property('index', 0);
   });

@@ -89,6 +89,12 @@ describe('Component', function() {
     expect(ComponentCollection.firstCall.args[1]).to.have.property('selector', '#test');
   });
 
+  it('should allow disabling the cache', function() {
+    component.find('#test', false);
+
+    expect(ComponentCollection.firstCall.args[1]).to.have.property('cache', false);
+  });
+
   it('should be able to cast itself to another component type', function() {
     var Test = sinon.spy();
     var test = component.as(Test);

@@ -61,7 +61,10 @@ describe('Locator', function() {
   });
 
   it('should instantiate with the right values', function() {
-    locator = new Locator('parent', 'selector', 'index');
+    locator = new Locator('selector', {
+      parent: 'parent',
+      index: 'index'
+    });
 
     expect(locator).to.have.property('parent', 'parent');
     expect(locator).to.have.property('selector', 'selector');
@@ -69,7 +72,7 @@ describe('Locator', function() {
   });
 
   it('should locate an existing element', function() {
-    locator = new Locator(promise, 'selector');
+    locator = new Locator('selector', {parent: promise});
     locator.id = 'uuid';
 
     evaluator.find.withArgs('[data-tinto-id="uuid"]').returns([1]);
@@ -78,31 +81,37 @@ describe('Locator', function() {
   });
 
   it('should locate an element collection', function() {
-    locator = new Locator(promise, 'test');
+    locator = new Locator('test', {parent: promise});
 
     return expect(locator.locate()).to.eventually.deep.equal(elements);
   });
 
   it('should locate an element with an index', function() {
-    locator = new Locator(promise, 'test', 0);
+    locator = new Locator('test', {
+      parent: promise,
+      index: 0
+    });
 
     return expect(locator.locate()).to.eventually.equal(1);
   });
 
   it('should locate an element with an index starting from the end', function() {
-    locator = new Locator(promise, 'test', -1);
+    locator = new Locator('test', {
+      parent: promise,
+      index: -1
+    });
 
     return expect(locator.locate()).to.eventually.equal(2);
   });
 
   it('should locate an element with no known parent', function() {
-    locator = new Locator(null, 'test');
+    locator = new Locator('test');
 
     return expect(locator.locate()).to.eventually.deep.equal(elements);
   });
 
   it('should synchronize its identifier with the underlying DOM element', function() {
-    locator = new Locator(null, 'test', 0);
+    locator = new Locator('test', {index: 0});
 
     return locator.locate().then(function() {
       expect(locator).to.have.property('id', 'uuid');
@@ -111,7 +120,7 @@ describe('Locator', function() {
   });
 
   it('should include the selector in its message', function() {
-    locator = new Locator(null, '#test');
+    locator = new Locator('#test');
 
     expect(locator.getMessage()).to.equal(
       'an element matching selector "#test"'
@@ -119,11 +128,13 @@ describe('Locator', function() {
   });
 
   it('should include the parent in its message', function() {
-    locator = new Locator({
-      toString: function() {
-        return 'parent';
+    locator = new Locator('#test', {
+      parent: {
+        toString: function() {
+          return 'parent';
+        }
       }
-    }, '#test');
+    });
 
     expect(locator.getMessage()).to.equal(
       'an element matching selector "#test" under parent'
@@ -131,10 +142,19 @@ describe('Locator', function() {
   });
 
   it('should include the index in its message', function() {
-    locator = new Locator(null, '#test', 1);
+    locator = new Locator('#test', {index: 1});
 
     expect(locator.getMessage()).to.equal(
       'an element matching selector "#test" at index 1'
     );
+  });
+
+  it('should allow turning the cache off', function() {
+    locator = new Locator('test', {cache: false});
+    locator.id = 'uuid';
+
+    evaluator.find.withArgs('[data-tinto-id="uuid"]').returns([1]);
+
+    return expect(locator.locate()).to.eventually.deep.equal(elements);
   });
 });

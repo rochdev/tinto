@@ -28,12 +28,16 @@ describe('find', function() {
   });
 
   it('should find components in the page', function() {
-    find('#test');
-
     var components = find('#test');
 
     expect(components).to.be.instanceOf(ComponentCollection);
-    expect(ComponentCollection.firstCall.args[1]).to.have.property('parent', null);
+    expect(ComponentCollection.firstCall.args[1]).to.have.property('parent', undefined);
     expect(ComponentCollection.firstCall.args[1]).to.have.property('selector', '#test');
+  });
+
+  it('should allow disabling the cache', function() {
+    find('#test', false);
+
+    expect(ComponentCollection.firstCall.args[1]).to.have.property('cache', false);
   });
 });
