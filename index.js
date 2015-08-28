@@ -33,8 +33,8 @@ module.exports.done = queue.process.bind(queue);
 module.exports.be = require('./lib/utils/delegate');
 module.exports.have = require('./lib/utils/delegate');
 module.exports.load = require('./lib/utils/load');
-module.exports.waitFor = require('./lib/wait-for');
-module.exports.waitUntil = require('./lib/wait-for');
+module.exports.waitFor = require('./lib/utils/wait-for');
+module.exports.waitUntil = require('./lib/utils/wait-for');
 // TODO: not with negate=true
 
 /**
