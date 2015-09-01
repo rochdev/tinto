@@ -1,3 +1,6 @@
 {
-  "preset": "grunt"
+  "preset": "grunt",
+  "jsDoc": {
+    "checkTypes": "strictNativeCase"
+  }
 }
