@@ -8,7 +8,7 @@ var expect = require('chai').expect;
 describe('Attribute', function() {
   var component;
   var name;
-  var promise;
+  var value;
   var attribute;
 
   beforeEach(function() {
@@ -21,15 +21,15 @@ describe('Attribute', function() {
   });
 
   it('should have the correct string representation', function() {
-    attribute = new Attribute(component, name, promise);
+    attribute = new Attribute(component, name, value);
 
     expect(attribute.toString()).to.equal('property test of [Component:uuid]');
   });
 
   describe('given a primitive value', function() {
     beforeEach(function() {
-      promise = Q.resolve('test');
-      attribute = new Attribute(component, name, promise);
+      value = function() {return Q.resolve('test');};
+      attribute = new Attribute(component, name, value);
     });
 
     it('should assert to true for equality when actual and expected values match', function() {
@@ -65,8 +65,8 @@ describe('Attribute', function() {
 
   describe('given multiple primitive values', function() {
     beforeEach(function() {
-      promise = Q.resolve('test');
-      attribute = new Attribute(component, name, promise);
+      value = function() {return Q.resolve('test');};
+      attribute = new Attribute(component, name, value);
     });
 
     it('should assert to true for containing when actual contains all expected', function() {
@@ -90,8 +90,8 @@ describe('Attribute', function() {
 
   describe('given an array', function() {
     beforeEach(function() {
-      promise = Q.resolve(['foo', 'bar']);
-      attribute = new Attribute(component, name, promise);
+      value = function() {return Q.resolve(['foo', 'bar']);};
+      attribute = new Attribute(component, name, value);
     });
 
     it('should assert to true for equality when actual and expected values match', function() {
