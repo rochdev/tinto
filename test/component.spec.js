@@ -35,7 +35,8 @@ describe('Component', function() {
       getAttribute: function() {},
       getText: function() {},
       click: function() {},
-      sendKeys: function() {}
+      sendKeys: function() {},
+      clear: function() {}
     });
 
     driver = {
@@ -153,6 +154,16 @@ describe('Component', function() {
     return queue.push.args[0][0]().then(function() {
       expect(element.sendKeys).to.have.been.calledWith('hello');
       expect(element.sendKeys).to.have.been.calledWith('hello', 'world');
+    });
+  });
+
+  it('should clear text on the component', function() {
+    component.clear();
+
+    expect(queue.push).to.have.been.called;
+
+    return queue.push.firstCall.args[0]().then(function() {
+      expect(element.clear).to.have.been.called;
     });
   });
 
