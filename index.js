@@ -13,7 +13,6 @@ var config = require('./lib/utils/config');
 var html = require('./lib/html');
 
 module.exports = tinto;
-global.tinto = tinto;
 
 module.exports.Component = require('./lib/component');
 module.exports.Page = require('./lib/page');
@@ -50,6 +49,10 @@ chai.use(require('./lib/assertions'));
 
 // Default bundle
 bundle('html', html);
+
+// Globals
+global.tinto = tinto;
+global.browser = browser;
 
 // Load user config
 config.load();
