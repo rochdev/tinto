@@ -73,8 +73,8 @@ searchButton.should.eventually(
 
 ##### ES5
 ```js
-function Grid(locator) {
-  Component.call(this, locator);
+function Grid() {
+  Component.apply(this, arguments);
   
   this.getter('rows', function() {
     return this.find('tr');
