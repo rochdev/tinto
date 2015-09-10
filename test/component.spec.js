@@ -316,7 +316,7 @@ describe('Component', function() {
       }
     };
 
-    component.__bundle__ = 'test';
+    component.constructor.__bundle__ = 'test';
     component.state('test');
 
     return component.is('test')().then(function(result) {
@@ -336,7 +336,7 @@ describe('Component', function() {
       }
     };
 
-    component.__bundle__ = 'test';
+    component.constructor.__bundle__ = 'test';
     component.state('test', [true]);
 
     return component.is('test')().then(function(result) {
@@ -355,7 +355,7 @@ describe('Component', function() {
       }
     };
 
-    component.__bundle__ = 'test';
+    component.constructor.__bundle__ = 'test';
     component.property('test');
 
     return component.has('test', 'a value')().then(function(result) {
@@ -377,7 +377,7 @@ describe('Component', function() {
       }
     };
 
-    component.__bundle__ = 'test';
+    component.constructor.__bundle__ = 'test';
     component.property('test', ['a value']);
 
     return component.has('test', 'a value')().then(function(result) {
