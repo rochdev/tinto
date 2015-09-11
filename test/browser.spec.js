@@ -2,7 +2,8 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
-var expect = require('chai').use(sinonChai).expect;
+var chaiAsPromised = require('chai-as-promised');
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 var rewire = require('rewire');
 var Q = require('q');
 var Browser = rewire('../lib/browser');

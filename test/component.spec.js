@@ -3,9 +3,10 @@
 var rewire = require('rewire');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
+var chaiAsPromised = require('chai-as-promised');
 var Q = require('q');
 var Component = rewire('../lib/component');
-var expect = require('chai').use(sinonChai).expect;
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 
 describe('Component', function() {
   var ComponentCollection;

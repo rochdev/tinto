@@ -4,7 +4,8 @@ var Q = require('q');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var mockery = require('mockery');
-var expect = require('chai').use(sinonChai).expect;
+var chaiAsPromised = require('chai-as-promised');
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 
 describe('Locator', function() {
   var Locator;

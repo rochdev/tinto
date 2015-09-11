@@ -3,8 +3,8 @@
 var mockery = require('mockery');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
-//var Q = require('q');
-var expect = require('chai').use(sinonChai).expect;
+var chaiAsPromised = require('chai-as-promised');
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 
 describe('Assertion', function() {
   var Entity;
