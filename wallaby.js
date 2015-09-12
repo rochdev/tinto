@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = function () {
+module.exports = function() {
   return {
     files: [
       'lib/**/*.js',
-      'test/mocks/**/*.js'
+      {pattern: 'test/mocks/**/*.js', instrument: false}
     ],
 
     tests: [
