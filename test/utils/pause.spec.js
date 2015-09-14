@@ -2,8 +2,9 @@
 
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
+var chaiAsPromised = require('chai-as-promised');
 var mockery = require('mockery');
-var expect = require('chai').use(sinonChai).expect;
+var expect = require('chai').use(sinonChai).use(chaiAsPromised).expect;
 
 describe('pause', function() {
   var pause;
@@ -15,7 +16,7 @@ describe('pause', function() {
       warnOnUnregistered: false
     });
 
-    sinon.stub(console, 'log');
+    sinon.spy(console, 'log');
 
     queue = sinon.stub({
       push: function() {}
@@ -39,29 +40,38 @@ describe('pause', function() {
     expect(queue.push).to.have.been.called;
   });
 
-  it('should pause until a key is pressed when in TTY', function() {
-    pause();
+  describe('when in TTY', function() {
+    beforeEach(function() {
+      process.stdin.isTTY = true;
+      process.stdin.setRawMode = sinon.spy();
+    });
 
-    var promise = queue.push.firstCall.args[0]();
+    it('should pause until a key is pressed', function() {
+      pause();
 
-    expect(promise).not.to.be.fulfilled;
+      var promise = queue.push.firstCall.args[0]();
 
-    process.stdin.emit('data', ' ');
+      expect(promise).not.to.be.fulfilled;
+      expect(process.stdin.setRawMode).to.have.been.calledWith(true);
 
-    expect(promise).to.be.fulfilled;
+      process.stdin.emit('data', ' ');
+
+      expect(process.stdin.setRawMode).to.have.been.calledWith(false);
+      expect(promise).to.be.fulfilled;
+    });
   });
 
-  it('should pause until a key is pressed when not in TTY', function() {
-    process.stdin.isTTY = false;
+  describe('when not in TTY', function() {
+    beforeEach(function() {
+      process.stdin.isTTY = false;
+    });
 
-    pause();
+    it('should continue execution', function() {
+      pause();
 
-    var promise = queue.push.firstCall.args[0]();
+      var promise = queue.push.firstCall.args[0]();
 
-    expect(promise).not.to.be.fulfilled;
-
-    process.stdin.emit('data', ' ');
-
-    expect(promise).to.be.fulfilled;
+      return expect(promise).to.be.fulfilled;
+    });
   });
 });
