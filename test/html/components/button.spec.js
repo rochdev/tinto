@@ -18,7 +18,8 @@ describe('HTML: Button component', function() {
 
     Component = sinon.spy();
     Component.prototype = sinon.stub({
-      property: function() {}
+      property: function() {},
+      states: function() {}
     });
 
     mockery.registerMock('../../component', Component);
@@ -39,5 +40,9 @@ describe('HTML: Button component', function() {
 
   it('should have property text', function() {
     expect(Component.prototype.property).to.have.been.calledWith('label');
+  });
+
+  it('should have states enabled and disabled', function() {
+    expect(Component.prototype.states).to.have.been.calledWith('enabled', 'disabled');
   });
 });
