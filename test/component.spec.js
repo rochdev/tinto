@@ -153,8 +153,23 @@ describe('Component', function() {
     expect(queue.push).to.have.been.called;
 
     return queue.push.args[0][0]().then(function() {
-      expect(element.sendKeys).to.have.been.calledWith('hello');
       expect(element.sendKeys).to.have.been.calledWith('hello', 'world');
+    });
+  });
+
+  it('should fill text on the component', function() {
+    element.clear.returns(component);
+
+    component.fill('hello', 'world');
+
+    expect(queue.push).to.have.been.called;
+
+    return queue.push.firstCall.args[0]().then(function() {
+      expect(element.clear).to.have.been.called;
+
+      return queue.push.secondCall.args[0]().then(function() {
+        expect(element.sendKeys).to.have.been.calledWith('hello', 'world');
+      });
     });
   });
 
