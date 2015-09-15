@@ -46,55 +46,40 @@ describe('assert', function() {
   });
 
   it('should assert a false result', function() {
-    return test(false, false, false);
+    wait.until.returns(Q.resolve(new AssertionResult(false, 'foo', 'bar')));
+
+    return test(false, false).then(function() {
+      expect(wait.until).to.have.been.calledWith(matcher, false);
+    });
   });
 
   it('should assert a true result', function() {
-    return test(true, false, false);
+    wait.until.returns(Q.resolve(new AssertionResult(true, 'foo', 'bar')));
+
+    return test(true, false).then(function() {
+      expect(wait.until).to.have.been.calledWith(matcher, false);
+    });
   });
 
   it('should assert a false result when negated', function() {
-    return test(false, true, false);
-  });
-
-  it('should assert a true result when negated', function() {
-    return test(true, true, false);
-  });
-
-  it('should assert a false result when waiting', function() {
     wait.until.returns(Q.resolve(new AssertionResult(false, 'foo', 'bar')));
 
-    return test(false, false, true).then(function() {
-      expect(wait.until).to.have.been.calledWith(matcher, false);
-    });
-  });
-
-  it('should assert a true result when waiting', function() {
-    wait.until.returns(Q.resolve(new AssertionResult(true, 'foo', 'bar')));
-
-    return test(true, false, true).then(function() {
-      expect(wait.until).to.have.been.calledWith(matcher, false);
-    });
-  });
-
-  it('should assert a false result when negated and waiting', function() {
-    wait.until.returns(Q.resolve(new AssertionResult(false, 'foo', 'bar')));
-
-    return test(false, true, true).then(function() {
+    return test(false, true).then(function() {
       expect(wait.until).to.have.been.calledWith(matcher, true);
     });
   });
 
-  it('should assert a true result when negated and waiting', function() {
+  it('should assert a true result when negated', function() {
     wait.until.returns(Q.resolve(new AssertionResult(true, 'foo', 'bar')));
 
-    return test(true, true, true).then(function() {
+    return test(true, true).then(function() {
       expect(wait.until).to.have.been.calledWith(matcher, true);
     });
   });
 
   it('should delegate the actual assertion when using the `delegate` flag', function() {
-    callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(true, 'foo', 'bar'))));
+    callback.withArgs(assertable).returns(matcher);
+    wait.until.withArgs(matcher).returns(Q.resolve(new AssertionResult(true, 'foo', 'bar')));
     flag.withArgs(context, 'delegate').returns(true);
 
     var delegator = assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo');
@@ -107,16 +92,17 @@ describe('assert', function() {
 
     return queue.push.firstCall.args[0]().then(function() {
       expect(context.assert).to.have.been.calledWith(
-        true, buildMessage(false, false), buildMessage(true, false), 'foo', 'bar', true
+        true, buildMessage(false), buildMessage(true), 'foo', 'bar', true
       );
     });
   });
 
   it('should support multiple results', function() {
-    callback.withArgs(assertable).returns(matcher.returns(Q.all([
+    callback.withArgs(assertable).returns(matcher);
+    wait.until.withArgs(matcher).returns(Q.all([
       Q.resolve(new AssertionResult(true, 'foo', 'bar')),
       Q.resolve(new AssertionResult(false, 'baz', 'qux'))
-    ])));
+    ]));
 
     flag.withArgs(context, 'object').returns(assertable);
 
@@ -135,11 +121,10 @@ describe('assert', function() {
     });
   });
 
-  function test(result, negate, eventually) {
+  function test(result, negate) {
     callback.withArgs(assertable).returns(matcher.returns(Q.resolve(new AssertionResult(result, 'foo', 'bar'))));
 
     flag.withArgs(context, 'negate').returns(negate);
-    flag.withArgs(context, 'eventually').returns(eventually);
     flag.withArgs(context, 'object').returns(assertable);
 
     assert('value', callback, 'have #{name} #{exp} but was #{act}').call(context, 'foo');
@@ -149,25 +134,19 @@ describe('assert', function() {
     return queue.push.firstCall.args[0]().then(function() {
       expect(callback).to.have.been.calledOn(context);
       expect(context.assert).to.have.been.calledWith(
-        result, buildMessage(false, eventually), buildMessage(true, eventually), 'foo', 'bar', !negate
+        result, buildMessage(false), buildMessage(true), 'foo', 'bar', !negate
       );
     });
   }
 
-  function buildMessage(not, eventually) {
+  function buildMessage(not) {
     var message = ['expected', context.toString()];
 
     if (not) {
       message.push('not');
     }
 
-    message.push('to');
-
-    if (eventually) {
-      message.push('eventually');
-    }
-
-    message.push('have value #{exp} but was #{act}');
+    message.push('to have value #{exp} but was #{act}');
 
     return message.join(' ');
   }
