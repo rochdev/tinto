@@ -9,6 +9,30 @@ A functional testing framework for component-based web applications
 
 ## Usage
 
+### Installation
+
+```sh
+$ npm install --save-dev tinto
+```
+
+### Configuration
+
+Tinto is configured from an optional `tinto.conf.js` file that should be placed in your project root. It should export the configuration object directly.
+
+#### Options
+
+* **includeStack**: whether or not to include a stack trace in assertion error messages
+* **bundles**: an array of bundle names or bundle instances to load
+
+#### Defaults
+
+```js
+module.exports = {
+  includeStack: false,
+  bundles: []
+};
+```
+
 ### Assertions syntax
 
 #### Components
@@ -75,7 +99,7 @@ searchButton.should.eventually(
 ```js
 function Grid() {
   Component.apply(this, arguments);
-  
+
   this.getter('rows', function() {
     return this.find('tr');
   });
@@ -100,24 +124,6 @@ var Grid = Component.extend({
     return this.find('tr');
   }
 });
-```
-
-### Configuration
-
-Tinto is configured from a file `tinto.conf.js` that should be placed in your project root. It should export the configuration object directly.
-
-#### Options
-
-* **includeStack**: whether or not to include a stack trace in assertion error messages
-* **bundles**: an array of bundle names or bundle instances to load
-
-#### Defaults
-
-```js
-module.exports = {
-  includeStack: false,
-  bundles: []
-};
 ```
 
 ### Command-line interface
