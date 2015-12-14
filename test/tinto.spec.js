@@ -17,6 +17,7 @@ describe('tinto', function() {
   var callback;
   var wrapper;
   var step;
+  var stepSpy;
   var promise;
 
   beforeEach(function() {
@@ -50,7 +51,8 @@ describe('tinto', function() {
 
     callback = sinon.spy();
     wrapper = tinto(function() {});
-    step = sinon.spy();
+    stepSpy = sinon.spy();
+    step = function() {stepSpy();};
 
     wrapper.call(world);
   });
@@ -119,7 +121,7 @@ describe('tinto', function() {
 
     var stepPromise = method.firstCall.args[2]();
 
-    expect(step).to.have.been.called;
+    expect(stepSpy).to.have.been.called;
     expect(queue.process).to.have.been.called;
     expect(stepPromise).to.equal(promise);
   }
