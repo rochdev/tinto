@@ -1,4 +1,5 @@
 # Tinto
+[![Version](https://img.shields.io/npm/v/tinto.svg)](https://www.npmjs.com/package/tinto)
 [![Build Status](https://travis-ci.org/rochdev/tinto.svg?branch=master)](https://travis-ci.org/rochdev/tinto)
 [![Test Coverage](https://codeclimate.com/github/rochdev/tinto/badges/coverage.svg)](https://codeclimate.com/github/rochdev/tinto)
 [![Code Climate](https://codeclimate.com/github/rochdev/tinto/badges/gpa.svg)](https://codeclimate.com/github/rochdev/tinto)
