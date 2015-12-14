@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "./bin/tinto",
   "scripts": {
-    "test": "./node_modules/.bin/jshint lib test --reporter=node_modules/jshint-stylish && ./node_modules/.bin/jscs lib test && ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --recursive lib test"
+    "test": "./node_modules/.bin/jshint lib test --reporter=node_modules/jshint-stylish && ./node_modules/.bin/jscs lib test && node --harmony ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --recursive lib test"
   },
   "author": "Roch Devost",
   "contributors": [],
@@ -15,17 +15,17 @@
     "chalk": "^1.0.0",
     "commander": "^2.7.1",
     "file": "^0.2.2",
-    "inquirer": "^0.10.0",
+    "inquirer": "^0.11.0",
     "jquery": "^2.1.1",
     "lodash": "^3.6.0",
     "node-uuid": "^1.4.3",
     "q": "^1.2.0",
-    "selenium-webdriver": "2.47.0"
+    "selenium-webdriver": "^2.48.2"
   },
   "devDependencies": {
     "chai-as-promised": "^5.1.0",
     "cucumber": "^0.5.0",
-    "istanbul": "^0.3.8",
+    "istanbul": "^0.4.1",
     "jscs": "^2.1.1",
     "jshint": "^2.6.3",
     "jshint-stylish": "^2.0.0",
@@ -38,5 +38,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rochdev/tinto.git"
+  },
+  "engines": {
+    "node": ">=0.12.0 <=5"
   }
 }
