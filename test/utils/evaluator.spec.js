@@ -15,6 +15,7 @@ describe('evaluator', function() {
   var builder;
   var webdriver;
   var queue;
+  var config;
 
   beforeEach(function() {
     mockery.enable({
@@ -48,7 +49,12 @@ describe('evaluator', function() {
 
     promise = Q.resolve(element);
 
+    config = {
+      get: sinon.stub().returns('foo')
+    };
+
     mockery.registerMock('selenium-webdriver', webdriver);
+    mockery.registerMock('./config', config);
 
     evaluator = require('../../lib/utils/evaluator');
   });
@@ -56,6 +62,12 @@ describe('evaluator', function() {
   afterEach(function() {
     mockery.deregisterAll();
     mockery.disable();
+  });
+
+  it('should use the configured browser', function() {
+    evaluator.open();
+
+    expect(builder.forBrowser).to.have.been.calledWith('foo');
   });
 
   it('should open the driver', function() {
