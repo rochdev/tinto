@@ -22,16 +22,17 @@ Tinto is configured from an optional `tinto.conf.js` file that should be placed 
 
 #### Options
 
-* **includeStack**: Whether or not to include a stack trace in assertion error messages. Defaults to `false`
-* **bundles**: An array of bundle names or bundle instances to load. Defaults to `[]`
-* **browser**: Which browser to use. See the WebDriver documentation for the list of supported browsers. Defaults to `firefox`
+* **includeStack**: Whether or not to include a stack trace in assertion error messages.
+* **bundles**: An array of bundle names or bundle instances to load.
+* **browser**: Which browser to use. See the WebDriver documentation for the list of supported browsers.
 
 #### Defaults
 
 ```js
 module.exports = {
   includeStack: false,
-  bundles: []
+  bundles: [],
+  browser: 'firefox'
 };
 ```
 
