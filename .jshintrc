@@ -21,7 +21,6 @@
   "evil"          : true,
   "expr"          : true,
   "funcscope"     : false,
-  "globalstrict"  : false,
   "iterator"      : false,
   "lastsemic"     : false,
   "loopfunc"      : false,
