@@ -16,6 +16,9 @@ describe('evaluator', function() {
   var webdriver;
   var queue;
   var config;
+  var chrome;
+  var chromedriver;
+  var ServiceBuilder;
 
   beforeEach(function() {
     mockery.enable({
@@ -50,10 +53,22 @@ describe('evaluator', function() {
     promise = Q.resolve(element);
 
     config = {
-      get: sinon.stub().returns('foo')
+      get: sinon.stub().withArgs('browser').returns('foo')
     };
 
+    chromedriver = {path: 'chromedriver.zip'};
+    ServiceBuilder = sinon.stub({build: function() {}});
+    chrome = sinon.stub({
+      ServiceBuilder: function() {},
+      setDefaultService: function() {}
+    });
+
+    ServiceBuilder.build.returns('service');
+    chrome.ServiceBuilder.withArgs(chromedriver.path).returns(ServiceBuilder);
+
     mockery.registerMock('selenium-webdriver', webdriver);
+    mockery.registerMock('selenium-webdriver/chrome', chrome);
+    mockery.registerMock('chromedriver', chromedriver);
     mockery.registerMock('./config', config);
 
     evaluator = require('../../lib/utils/evaluator');
@@ -125,5 +140,13 @@ describe('evaluator', function() {
     evaluator.open();
 
     return expect(evaluator.find('#test')).to.equal('elements');
+  });
+
+  it('should not require the user to install ChromeDriver when using Chrome', function() {
+    config.get.withArgs('browser').returns('chrome');
+
+    evaluator.open();
+
+    expect(chrome.setDefaultService).to.have.been.calledWith('service');
   });
 });
