@@ -29,11 +29,11 @@ Tinto is configured from an optional `tinto.conf.js` file that should be placed 
 #### Defaults
 
 ```js
-module.exports = {
+{
   includeStack: false,
   bundles: [],
   browser: 'firefox'
-};
+}
 ```
 
 ### Assertions syntax
