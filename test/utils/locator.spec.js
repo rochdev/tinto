@@ -35,10 +35,12 @@ describe('Locator', function() {
     evaluator = {
       find: sinon.stub(),
       getDriver: sinon.stub().returns(parent),
-      execute: sinon.spy(function(element, callback, id) {
+      execute: function(element, callback, id) {
         return Q.resolve(callback.call(context, id));
-      })
+      }
     };
+
+    sinon.spy(evaluator, 'execute');
 
     elements = [1, 2];
 
@@ -157,5 +159,17 @@ describe('Locator', function() {
     evaluator.find.withArgs('[data-tinto-id="uuid"]').returns([1]);
 
     return expect(locator.locate()).to.eventually.deep.equal(elements);
+  });
+
+  it('should return undefined when an element can no longer be found', function() {
+    locator = new Locator('test', {
+      parent: promise,
+      index: 0
+    });
+
+    evaluator.execute.restore();
+    sinon.stub(evaluator, 'execute').returns(Q.reject());
+
+    return expect(locator.locate()).to.eventually.be.undefined;
   });
 });
