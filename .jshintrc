@@ -43,5 +43,8 @@
   "worker"        : false,
   "wsh"           : false,
   "yui"           : false,
-  "globals"       : {}
+  "globals"       : {
+    "window": true,
+    "document": true
+  }
 }

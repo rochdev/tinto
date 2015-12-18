@@ -37,7 +37,9 @@ describe('Component', function() {
       getText: function() {},
       click: function() {},
       sendKeys: function() {},
-      clear: function() {}
+      clear: function() {},
+      isEnabled: function() {},
+      isDisplayed: function() {}
     });
 
     driver = {
@@ -69,6 +71,10 @@ describe('Component', function() {
     Component.__set__('evaluator', evaluator);
 
     component = new Component(locator);
+  });
+
+  afterEach(function() {
+    delete global.document;
   });
 
   it('should have a unique string identifier', function() {
@@ -485,5 +491,47 @@ describe('Component', function() {
 
   it('should not be missing when the element can be found', function() {
     return expect(component.is('missing')()).to.eventually.have.property('outcome', false);
+  });
+
+  it('should be clickable when there are no elements on top', function() {
+    var position = {left: 10, right: 20, top: 100, bottom: 110};
+    var context = {
+      getBoundingClientRect: sinon.stub().returns(position),
+      contains: sinon.stub().withArgs(context).returns(true)
+    };
+
+    global.document = {
+      elementFromPoint: sinon.stub().returns(context)
+    };
+
+    evaluator.execute = function(element, callback) {
+      return Q.resolve(callback.apply(context));
+    };
+
+    return component.is('clickable')().then(function(result) {
+      expect(result.outcome).to.be.true;
+      expect(global.document.elementFromPoint).to.have.been.calledWith(15, 105);
+    });
+  });
+
+  it('should not be clickable when there are elements on top', function() {
+    var position = {left: 10, right: 20, top: 100, bottom: 110};
+    var context = {
+      getBoundingClientRect: sinon.stub().returns(position),
+      contains: sinon.stub().withArgs(null).returns(false)
+    };
+
+    global.document = {
+      elementFromPoint: sinon.stub().returns(null)
+    };
+
+    evaluator.execute = function(element, callback) {
+      return Q.resolve(callback.apply(context));
+    };
+
+    return component.is('clickable')().then(function(result) {
+      expect(result.outcome).to.be.false;
+      expect(global.document.elementFromPoint).to.have.been.calledWith(15, 105);
+    });
   });
 });
