@@ -19,6 +19,7 @@ describe('Component', function() {
   var component;
   var evaluator;
   var driver;
+  var actions;
 
   beforeEach(function() {
     ComponentCollection = sinon.spy();
@@ -42,10 +43,15 @@ describe('Component', function() {
       isDisplayed: function() {}
     });
 
+    actions = {
+      mouseMove: sinon.spy(function() {return {perform: function() {return Q.resolve({});}};})
+    };
+
     driver = {
       wait: sinon.spy(function(until) {
         return until();
-      })
+      }),
+      actions: function() { return actions; }
     };
 
     evaluator = sinon.stub({
@@ -176,6 +182,16 @@ describe('Component', function() {
       return queue.push.secondCall.args[0]().then(function() {
         expect(element.sendKeys).to.have.been.calledWith('hello', 'world');
       });
+    });
+  });
+
+  it('should hover component', function() {
+    component.hover();
+
+    expect(queue.push).to.have.been.called;
+
+    return queue.push.args[0][0]().then(function() {
+      expect(actions.mouseMove).to.have.been.calledWith(element);
     });
   });
 
