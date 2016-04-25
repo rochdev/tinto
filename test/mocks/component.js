@@ -26,7 +26,7 @@ Component.prototype.getters = sinon.spy(function(props) {
     } else if (descriptor.value && typeof descriptor.value === 'function') {
       this.getter(prop, descriptor.value);
     }
-  }, this);
+  }.bind(this));
 });
 
 Component.prototype.property = sinon.spy(function(name, matcher) {

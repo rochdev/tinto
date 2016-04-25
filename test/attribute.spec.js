@@ -12,9 +12,9 @@ describe('Attribute', function() {
   var attribute;
 
   beforeEach(function() {
-    component = sinon.stub({
-      toString: function() {}
-    });
+    component = {
+      toString: sinon.stub()
+    };
     component.toString.returns('[Component:uuid]');
 
     name = 'test';
