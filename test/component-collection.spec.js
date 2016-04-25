@@ -12,21 +12,25 @@ describe('ComponentCollection', function() {
   var Component;
   var ComponentCollection;
 
-  beforeEach(function() {
+  before(function() {
+    extend = sinon.spy(function() {return 'test';});
+
     mockery.enable({
       useCleanCache: true,
       warnOnUnregistered: false
     });
 
-    extend = sinon.spy(function() {return 'test';});
-    Component = sinon.spy();
-
     mockery.registerMock('./utils/extend', extend);
+  });
 
+  beforeEach(function() {
+    extend.reset();
+
+    Component = sinon.spy();
     ComponentCollection = require('../lib/component-collection');
   });
 
-  afterEach(function() {
+  after(function() {
     mockery.deregisterAll();
     mockery.disable();
   });
