@@ -52,7 +52,7 @@ describe('Locator', function() {
       getElement: sinon.stub().returns(Q.resolve(parent))
     };
 
-    mockery.registerMock('node-uuid', uuid);
+    mockery.registerMock('uuid', uuid);
     mockery.registerMock('./evaluator', evaluator);
 
     Locator = require('../../lib/utils/locator');
