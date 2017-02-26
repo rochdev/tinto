@@ -96,6 +96,12 @@ describe('Browser', function() {
     expect(browser.navigate).to.equal('test');
   });
 
+  it('should expose the evaluator driver', function() {
+    evaluator.getDriver.returns('test');
+
+    expect(browser.getDriver()).to.equal('test');
+  });
+
   it('should close the evaluator', function() {
     browser.open();
     evaluator.close.returns(Q.resolve());
