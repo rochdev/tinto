@@ -1,4 +1,6 @@
 # Tinto
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/rochdev/tinto.svg)](https://greenkeeper.io/)
 [![Version](https://img.shields.io/npm/v/tinto.svg)](https://www.npmjs.com/package/tinto)
 [![Build Status](https://travis-ci.org/rochdev/tinto.svg?branch=master)](https://travis-ci.org/rochdev/tinto)
 [![Test Coverage](https://codeclimate.com/github/rochdev/tinto/badges/coverage.svg)](https://codeclimate.com/github/rochdev/tinto)
